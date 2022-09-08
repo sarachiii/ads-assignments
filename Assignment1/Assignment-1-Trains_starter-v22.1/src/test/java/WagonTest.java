@@ -75,8 +75,6 @@ public class WagonTest {
         assertEquals("[Wagon-9001]", freightWagon1.toString());
     }
 
-
-
     @Test
     public void T03_ASingleWagonIsTheLastWagonOfASequence() {
         assertEquals(passengerWagon1, passengerWagon1.getLastWagonAttached(),
@@ -120,7 +118,6 @@ public class WagonTest {
         assertEquals(4, passengerWagon1.getSequenceLength(),
                 "A wagon with three attachments should report a sequenceLength=4");
     }
-
 
     @Test
     public void T05_AttachTailCanOnlyConnectHeadWagons() {

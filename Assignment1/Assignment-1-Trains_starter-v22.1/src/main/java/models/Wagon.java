@@ -146,5 +146,8 @@ public class Wagon {
         return null;
     }
 
-    // TODO string representation of a Wagon
+    @Override
+    public String toString() {
+        return "[Wagon-" + id + "]";
+    }
 }

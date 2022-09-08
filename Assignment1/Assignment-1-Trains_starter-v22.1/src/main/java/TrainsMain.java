@@ -12,14 +12,13 @@ public class TrainsMain {
         Locomotive rembrandt = new Locomotive(24531, 7);
         Train amsterdamParis = new Train(rembrandt, "Amsterdam", "Paris");
 
-        // The (Wagon)(Object) type casts can be removed once you've fixed PassengerWagon and FreightWagon
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8001,32));
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8002,32));
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8003,18));
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8004,44));
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8005,44));
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8006,44));
-        amsterdamParis.attachToRear((Wagon)(Object)new PassengerWagon(8007,44));
+        amsterdamParis.attachToRear(new PassengerWagon(8001,32));
+        amsterdamParis.attachToRear(new PassengerWagon(8002,32));
+        amsterdamParis.attachToRear(new PassengerWagon(8003,18));
+        amsterdamParis.attachToRear(new PassengerWagon(8004,44));
+        amsterdamParis.attachToRear(new PassengerWagon(8005,44));
+        amsterdamParis.attachToRear(new PassengerWagon(8006,44));
+        amsterdamParis.attachToRear(new PassengerWagon(8007,44));
         System.out.println(amsterdamParis);
         System.out.println("Total number of seats: " + amsterdamParis.getTotalNumberOfSeats());
 

@@ -1,10 +1,14 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Train {
     private final String origin;
     private final String destination;
     private final Locomotive engine;
     private Wagon firstWagon;
+    private List<Wagon> wagons;
 
     /* Representation invariants:
         firstWagon == null || firstWagon.previousWagon == null
@@ -15,25 +19,20 @@ public class Train {
         this.engine = engine;
         this.destination = destination;
         this.origin = origin;
+        wagons = new ArrayList<>();
     }
 
-    /* three helper methods that are usefull in other methods */
+    /* three helper methods that are useful in other methods */
     public boolean hasWagons() {
-        // TODO
-
-        return false;
+        return firstWagon != null;
     }
 
     public boolean isPassengerTrain() {
-        // TODO
-
-        return false;
+        return this.firstWagon instanceof PassengerWagon;
     }
 
     public boolean isFreightTrain() {
-        // TODO
-
-        return false;
+        return this.firstWagon instanceof FreightWagon;
     }
 
     public Locomotive getEngine() {
@@ -44,6 +43,14 @@ public class Train {
         return firstWagon;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
     /**
      * Replaces the current sequence of wagons (if any) in the train
      * by the given new sequence of wagons (if any)
@@ -52,16 +59,14 @@ public class Train {
      *              (can be null)
      */
     public void setFirstWagon(Wagon wagon) {
-        // TODO
+        this.firstWagon = wagon;
     }
 
     /**
      * @return  the number of Wagons connected to the train
      */
     public int getNumberOfWagons() {
-        // TODO
-
-        return 0;
+        return wagons.size();
     }
 
     /**
@@ -78,9 +83,15 @@ public class Train {
      *          (return 0 for a freight train)
      */
     public int getTotalNumberOfSeats() {
-        // TODO
-
-        return 0;
+        int numerOfSeats = 0;
+        for (Wagon wagon : wagons) {
+            if (wagon instanceof PassengerWagon) {
+                numerOfSeats += ((PassengerWagon) wagon).getNumberOfSeats();
+            } else {
+                return 0;
+            }
+        }
+        return numerOfSeats;
     }
 
     /**
@@ -131,7 +142,7 @@ public class Train {
     public boolean canAttach(Wagon wagon) {
         // TODO
 
-        return false;
+        return true;
     }
 
     /**
@@ -143,8 +154,10 @@ public class Train {
      * @return  whether the attachment could be completed successfully
      */
     public boolean attachToRear(Wagon wagon) {
-        // TODO
-
+        if(canAttach(wagon)) {
+            wagons.add(wagon);
+            return true;
+        }
         return false;
     }
 
@@ -229,5 +242,12 @@ public class Train {
 
     }
 
-    // TODO string representation of a train
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for (Wagon wagon : wagons) {
+            s.append(wagon.toString()); //nullpointerexception fout
+        }
+        return engine.toString() + s + " with " + getNumberOfWagons() + " wagons from " + getOrigin() + " to " + getDestination();
+    }
 }
