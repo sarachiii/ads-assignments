@@ -1,6 +1,6 @@
 package models;
 
-public class Wagon {
+public abstract class Wagon {
     protected int id;               // some unique ID of a Wagon
     private Wagon nextWagon;        // another wagon that is appended at the tail of this wagon
                                     // a.k.a. the successor of this wagon in a sequence
@@ -8,7 +8,6 @@ public class Wagon {
     private Wagon previousWagon;    // another wagon that is prepended at the front of this wagon
                                     // a.k.a. the predecessor of this wagon in a sequence
                                     // set to null if no predecessor is connected
-
 
     // representation invariant propositions:
     // tail-connection-invariant:   wagon.nextWagon == null or wagon == wagon.nextWagon.previousWagon
@@ -34,18 +33,14 @@ public class Wagon {
      * @return  whether this wagon has a wagon appended at the tail
      */
     public boolean hasNextWagon() {
-        // TODO
-
-        return false;
+        return this.nextWagon != null;
     }
 
     /**
      * @return  whether this wagon has a wagon prepended at the front
      */
     public boolean hasPreviousWagon() {
-        // TODO
-
-        return false;
+        return this.previousWagon != null;
     }
 
     /**
@@ -54,9 +49,13 @@ public class Wagon {
      * @return  the last wagon
      */
     public Wagon getLastWagonAttached() {
-        // TODO find the last wagon in the sequence
 
-        return null;
+        Wagon currentWagon = this;
+
+        while(currentWagon.hasNextWagon()) {
+            currentWagon = currentWagon.getNextWagon();
+        }
+        return currentWagon;
     }
 
     /**
@@ -64,9 +63,16 @@ public class Wagon {
      * including this wagon itself.
      */
     public int getSequenceLength() {
-        // TODO traverse the sequence and find its length
 
-        return 0;
+        Wagon currentWagon = this;
+        int length = 1; //legth of the sequence
+
+        while(currentWagon.hasNextWagon()) {
+            currentWagon = currentWagon.getNextWagon();
+            length++;
+        }
+
+        return length;
     }
 
     /**
