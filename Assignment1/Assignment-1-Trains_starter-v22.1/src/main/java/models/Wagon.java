@@ -158,9 +158,9 @@ public abstract class Wagon {
      */
     public void reAttachTo(Wagon front) {
         // TODO detach any existing connections that will be rearranged
-        front.detachFront();
-        this.detachTail();
-        this.attachTail(front);
+        this.detachFront();
+        front.detachTail();
+        front.attachTail(this);
 
         // TODO attach this wagon to its new predecessor front (sustaining the invariant propositions).
 

@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Train {
@@ -8,7 +9,9 @@ public class Train {
     private final String destination;
     private final Locomotive engine;
     private Wagon firstWagon;
-    private List<Wagon> wagons;
+//    private LinkedList<Wagon> wagons;
+
+    private final int correctionNumber = 1;
 
     /* Representation invariants:
         firstWagon == null || firstWagon.previousWagon == null
@@ -19,7 +22,7 @@ public class Train {
         this.engine = engine;
         this.destination = destination;
         this.origin = origin;
-        wagons = new ArrayList<>();
+//        wagons = new LinkedList<>();
     }
 
     /* three helper methods that are useful in other methods */
@@ -66,16 +69,15 @@ public class Train {
      * @return  the number of Wagons connected to the train
      */
     public int getNumberOfWagons() {
-        return wagons.size();
+        return 0;
     }
 
     /**
      * @return  the last wagon attached to the train
      */
     public Wagon getLastWagonAttached() {
-        // TODO
-
-        return null;
+        Wagon lastWagon = this.firstWagon;
+        return lastWagon;
     }
 
     /**
@@ -84,13 +86,6 @@ public class Train {
      */
     public int getTotalNumberOfSeats() {
         int numerOfSeats = 0;
-        for (Wagon wagon : wagons) {
-            if (wagon instanceof PassengerWagon) {
-                numerOfSeats += ((PassengerWagon) wagon).getNumberOfSeats();
-            } else {
-                return 0;
-            }
-        }
         return numerOfSeats;
     }
 
@@ -101,9 +96,8 @@ public class Train {
      *
      */
     public int getTotalMaxWeight() {
-        // TODO
-
-        return 0;
+        int maxWeight = 0;
+        return maxWeight;
     }
 
      /**
@@ -113,9 +107,8 @@ public class Train {
      *          (return null if the position is not valid for this train)
      */
     public Wagon findWagonAtPosition(int position) {
-        // TODO
-
-        return null;
+        Wagon wagon = firstWagon;
+        return wagon;
     }
 
     /**
@@ -125,8 +118,6 @@ public class Train {
      *          (return null if no wagon was found with the given wagonId)
      */
     public Wagon findWagonById(int wagonId) {
-        // TODO
-
         return null;
     }
 
@@ -140,9 +131,15 @@ public class Train {
      * @return whether type and capacity of this train can accommodate attachment of the sequence
      */
     public boolean canAttach(Wagon wagon) {
-        // TODO
+        // TODO ignores the predecessors before the head wagon, if any ?
+        if (isFreightTrain() && wagon instanceof FreightWagon ||
+                isPassengerTrain() && wagon instanceof PassengerWagon){
+            if (getNumberOfWagons() <= this.engine.getMaxWagons()){
+                return true;
+            }
+        }
 
-        return true;
+        return false;
     }
 
     /**
@@ -155,10 +152,8 @@ public class Train {
      */
     public boolean attachToRear(Wagon wagon) {
         if(canAttach(wagon)) {
-            wagons.add(wagon);
             return true;
-        }
-        return false;
+        } else return false;
     }
 
     /**
@@ -171,9 +166,9 @@ public class Train {
      * @return  whether the insertion could be completed successfully
      */
     public boolean insertAtFront(Wagon wagon) {
-        // TODO
-
-        return false;
+        if(canAttach(wagon)) {
+            return true;
+        } else return false;
     }
 
     /**
@@ -192,7 +187,9 @@ public class Train {
      */
     public boolean insertAtPosition(int position, Wagon wagon) {
         // TODO
-
+        if(canAttach(wagon)) {
+            return true;
+        }
         return false;
     }
 
@@ -245,9 +242,9 @@ public class Train {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (Wagon wagon : wagons) {
-            s.append(wagon.toString()); //nullpointerexception fout
-        }
+//        for (Wagon wagon : wagons) {
+//            s.append(wagon.toString()); //nullpointerexception fout
+//        }
         return engine.toString() + s + " with " + getNumberOfWagons() + " wagons from " + getOrigin() + " to " + getDestination();
     }
 }
