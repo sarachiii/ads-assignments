@@ -92,15 +92,12 @@ public abstract class Wagon {
         Wagon currentWagon = this;
 
         if (currentWagon.hasNextWagon()) {
-
-            System.out.println(currentWagon.nextWagon + " has already been attached to " + currentWagon);
-
             throw new IllegalStateException(
                     currentWagon.nextWagon + " has already been attached to " + currentWagon
             );
         } else if (tail.hasPreviousWagon()) {
             throw new IllegalStateException(
-                    tail + " is already pulling " + previousWagon
+                    tail + " is already pulling " + tail.previousWagon
             );
         } else {
             currentWagon.nextWagon = tail;
@@ -119,9 +116,14 @@ public abstract class Wagon {
         Wagon wagon = this;
         Wagon firstWagonOfTail = wagon.nextWagon;
 
-        wagon.nextWagon = null; //detach tail
+        if (firstWagonOfTail != null) {
+            wagon.nextWagon = null; //detach tail
+            firstWagonOfTail.previousWagon = null;
 
-        return firstWagonOfTail;
+            return firstWagonOfTail;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -136,23 +138,32 @@ public abstract class Wagon {
         Wagon currentWagon = this;
         Wagon previousWagon = currentWagon.previousWagon;
 
-        previousWagon.nextWagon = null;
+        if (previousWagon != null) {
+            previousWagon.nextWagon = null;
+            currentWagon.previousWagon = null;
 
-        return previousWagon;
+            return previousWagon;
+        } else {
+            return null;
+        }
     }
 
     /**
      * Replaces the tail of the <code>front</code> wagon by this wagon and its connected successors
      * Before such reconfiguration can be made,
-     * the method first disconnects this wagon form its predecessor,
+     * the method first disconnects this wagon from its predecessor,
      * and the <code>front</code> wagon from its current tail.
      *
      * @param front the wagon to which this wagon must be attached to.
      */
     public void reAttachTo(Wagon front) {
         // TODO detach any existing connections that will be rearranged
+        front.detachFront();
+        this.detachTail();
+        this.attachTail(front);
 
         // TODO attach this wagon to its new predecessor front (sustaining the invariant propositions).
+
     }
 
     /**

@@ -141,10 +141,10 @@ public class WagonTest {
                     passengerWagon3.attachTail(passengerWagon2);
                 }
         );
-//        assertTrue(t.getMessage().contains(passengerWagon1.toString().replaceAll("[\\[\\]]","")),
-//                "Exception message should report that " + passengerWagon2.toString() + " has already been attached to " + passengerWagon1.toString());
-//        assertTrue(t.getMessage().contains(passengerWagon2.toString().replaceAll("[\\[\\]]","")),
-//                "Exception message should report that " + passengerWagon2.toString() + " has already been attached to " + passengerWagon1.toString());
+        assertTrue(t.getMessage().contains(passengerWagon1.toString().replaceAll("[\\[\\]]","")),
+                "Exception message should report that " + passengerWagon2.toString() + " has already been attached to " + passengerWagon1.toString());
+        assertTrue(t.getMessage().contains(passengerWagon2.toString().replaceAll("[\\[\\]]","")),
+                "Exception message should report that " + passengerWagon2.toString() + " has already been attached to " + passengerWagon1.toString());
 
         t = assertThrows(IllegalStateException.class,
                 () -> {
