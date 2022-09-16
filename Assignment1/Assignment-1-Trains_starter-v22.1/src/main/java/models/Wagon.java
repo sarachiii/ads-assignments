@@ -89,19 +89,18 @@ public abstract class Wagon {
      *                               or:   "%s has already been attached to %s"
      */
     public void attachTail(Wagon tail) {
-        Wagon currentWagon = this;
 
-        if (currentWagon.hasNextWagon()) {
+        if (hasNextWagon()) {
             throw new IllegalStateException(
-                    currentWagon.nextWagon + " has already been attached to " + currentWagon
+                    this.nextWagon + " has already been attached to " + this
             );
         } else if (tail.hasPreviousWagon()) {
             throw new IllegalStateException(
                     tail + " is already pulling " + tail.previousWagon
             );
         } else {
-            currentWagon.nextWagon = tail;
-            tail.previousWagon = currentWagon;
+            this.nextWagon = tail;
+            tail.previousWagon = this;
         }
     }
 
@@ -113,11 +112,10 @@ public abstract class Wagon {
      */
     public Wagon detachTail() {
 
-        Wagon wagon = this;
-        Wagon firstWagonOfTail = wagon.nextWagon;
+        Wagon firstWagonOfTail = this.nextWagon;
 
         if (firstWagonOfTail != null) {
-            wagon.nextWagon = null; //detach tail
+            this.nextWagon = null; //detach tail
             firstWagonOfTail.previousWagon = null;
 
             return firstWagonOfTail;
@@ -135,12 +133,11 @@ public abstract class Wagon {
      */
     public Wagon detachFront() {
 
-        Wagon currentWagon = this;
-        Wagon previousWagon = currentWagon.previousWagon;
+        Wagon previousWagon = this.previousWagon;
 
-        if (previousWagon != null) {
+        if (hasPreviousWagon()) {
             previousWagon.nextWagon = null;
-            currentWagon.previousWagon = null;
+            this.previousWagon = null;
 
             return previousWagon;
         } else {
@@ -157,13 +154,9 @@ public abstract class Wagon {
      * @param front the wagon to which this wagon must be attached to.
      */
     public void reAttachTo(Wagon front) {
-        // TODO detach any existing connections that will be rearranged
         this.detachFront();
         front.detachTail();
         front.attachTail(this);
-
-        // TODO attach this wagon to its new predecessor front (sustaining the invariant propositions).
-
     }
 
     /**
@@ -171,7 +164,17 @@ public abstract class Wagon {
      * and reconnects its tail to the wagon in front of it, if any.
      */
     public void removeFromSequence() {
-        // TODO
+        if (hasPreviousWagon() && hasNextWagon()){
+            Wagon previousWagon = this.previousWagon;
+            this.detachFront();
+            Wagon nextWagon = this.nextWagon;
+            this.detachTail();
+            previousWagon.attachTail(nextWagon);
+        } else if (hasPreviousWagon()){
+            this.detachFront();
+        } else if (hasNextWagon()) {
+            this.detachTail();
+        }
     }
 
 
