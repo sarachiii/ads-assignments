@@ -187,20 +187,39 @@ public abstract class Wagon {
      */
     public Wagon reverseSequence() {
         Wagon frontWagon = this;
-        Wagon currentWagon = frontWagon;
+        Wagon detachedHead = frontWagon.previousWagon;
 
-        if (hasPreviousWagon()){
-            frontWagon = frontWagon.previousWagon;
-            frontWagon.detachTail();
+        if (detachedHead == null){
+            Wagon reversedSequence = frontWagon.getLastWagonAttached();
+            reversedSequence.detachFront();
+            reversedSequence.attachTail(frontWagon);
+            frontWagon = reversedSequence;
+        } else {
+            detachedHead.detachTail();
+            Wagon reversedSequence = frontWagon.getLastWagonAttached();
+            reversedSequence.detachFront();
+            reversedSequence.attachTail(frontWagon);
+            frontWagon = reversedSequence;
         }
+
+        Wagon currentWagon = frontWagon;
 
         while (hasNextWagon()){
             Wagon reversedSequence = currentWagon.getLastWagonAttached();
-            reversedSequence.reAttachTo(frontWagon);
+            Wagon detachedWagon = currentWagon.nextWagon;
+            reversedSequence.detachFront();
+            currentWagon.detachTail();
+            if (detachedWagon != null) {
+                detachedWagon.reAttachTo(reversedSequence);
+            }
+            reversedSequence.reAttachTo(currentWagon);
             currentWagon = reversedSequence;
         }
 
-        return frontWagon;
+        if (detachedHead != null){
+            detachedHead.attachTail(currentWagon);
+            return frontWagon;
+        } else return frontWagon;
     }
 
     @Override
