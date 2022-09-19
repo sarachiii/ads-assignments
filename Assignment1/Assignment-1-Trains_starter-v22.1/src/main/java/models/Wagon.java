@@ -186,10 +186,21 @@ public abstract class Wagon {
      * @return the new start Wagon of the reversed sequence (with is the former last Wagon of the original sequence)
      */
     public Wagon reverseSequence() {
-        // TODO provide an iterative implementation,
-        //   using attach- and detach methods of this class
+        Wagon frontWagon = this;
+        Wagon currentWagon = frontWagon;
 
-        return null;
+        if (hasPreviousWagon()){
+            frontWagon = frontWagon.previousWagon;
+            frontWagon.detachTail();
+        }
+
+        while (hasNextWagon()){
+            Wagon reversedSequence = currentWagon.getLastWagonAttached();
+            reversedSequence.reAttachTo(frontWagon);
+            currentWagon = reversedSequence;
+        }
+
+        return frontWagon;
     }
 
     @Override
