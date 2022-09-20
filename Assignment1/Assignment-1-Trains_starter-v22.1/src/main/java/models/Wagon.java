@@ -219,7 +219,9 @@ public abstract class Wagon {
         if (detachedHead != null){
             detachedHead.attachTail(currentWagon);
             return frontWagon;
-        } else return frontWagon;
+        } else {
+            return frontWagon;
+        }
     }
 
     @Override
