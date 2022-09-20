@@ -164,13 +164,13 @@ public abstract class Wagon {
      * and reconnects its tail to the wagon in front of it, if any.
      */
     public void removeFromSequence() {
-        if (hasPreviousWagon() && hasNextWagon()){
+        if (hasPreviousWagon() && hasNextWagon()) {
             Wagon previousWagon = this.previousWagon;
             this.detachFront();
             Wagon nextWagon = this.nextWagon;
             this.detachTail();
             previousWagon.attachTail(nextWagon);
-        } else if (hasPreviousWagon()){
+        } else if (hasPreviousWagon()) {
             this.detachFront();
         } else if (hasNextWagon()) {
             this.detachTail();
@@ -190,10 +190,10 @@ public abstract class Wagon {
         Wagon detachedHead = frontWagon.previousWagon;
 
         if (detachedHead == null){
-            Wagon reversedSequence = frontWagon.getLastWagonAttached();
-            reversedSequence.detachFront();
-            reversedSequence.attachTail(frontWagon);
-            frontWagon = reversedSequence;
+            Wagon reversedWagon = frontWagon.getLastWagonAttached();
+            reversedWagon.detachFront();
+            reversedWagon.attachTail(frontWagon);
+            frontWagon = reversedWagon;
         } else {
             detachedHead.detachTail();
             Wagon reversedSequence = frontWagon.getLastWagonAttached();
