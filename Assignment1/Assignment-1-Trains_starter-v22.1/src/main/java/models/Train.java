@@ -80,16 +80,13 @@ public class Train {
      * @return the last wagon attached to the train
      */
     public Wagon getLastWagonAttached() {
-
-        Wagon lastWagon = getFirstWagon();
-
-        if (hasWagons()) {
-            while (lastWagon.hasNextWagon()) {
-                lastWagon = lastWagon.getNextWagon();
+            Wagon lastWagon = getFirstWagon();
+            if (hasWagons()) {
+                while (lastWagon.hasNextWagon()) {
+                    lastWagon = lastWagon.getNextWagon();
+                }
             }
-        }
-
-        return lastWagon;
+            return lastWagon;
     }
 
     /**
@@ -146,8 +143,17 @@ public class Train {
      * (return null if the position is not valid for this train)
      */
     public Wagon findWagonAtPosition(int position) {
-        Wagon wagon = firstWagon;
-        return wagon;
+
+        if (!hasWagons() || position <= 0 || position > getNumberOfWagons())
+            return null;
+
+        Wagon currentWagon = firstWagon;
+
+        for (int i = 1; i < position; i++) {
+            currentWagon = currentWagon.getNextWagon();
+        }
+
+        return currentWagon;
     }
 
     /**
@@ -158,6 +164,15 @@ public class Train {
      * (return null if no wagon was found with the given wagonId)
      */
     public Wagon findWagonById(int wagonId) {
+
+        Wagon currentWagon = firstWagon;
+
+        for (int i = 0; i < getNumberOfWagons(); i++) {
+            if (currentWagon.getId() == wagonId){
+                return currentWagon;
+            }
+            currentWagon = currentWagon.getNextWagon();
+        }
         return null;
     }
 
