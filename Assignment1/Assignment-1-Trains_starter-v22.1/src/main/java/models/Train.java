@@ -80,12 +80,16 @@ public class Train {
      * @return the last wagon attached to the train
      */
     public Wagon getLastWagonAttached() {
+
+        Wagon lastWagon = getFirstWagon();
+
         if (hasWagons()) {
-            while (firstWagon.hasNextWagon()) {
-                firstWagon = firstWagon.getNextWagon();
+            while (lastWagon.hasNextWagon()) {
+                lastWagon = lastWagon.getNextWagon();
             }
         }
-        return firstWagon;
+
+        return lastWagon;
     }
 
     /**
