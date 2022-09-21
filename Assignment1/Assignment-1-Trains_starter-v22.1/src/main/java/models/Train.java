@@ -187,15 +187,16 @@ public class Train {
      * @return whether type and capacity of this train can accommodate attachment of the sequence
      */
     public boolean canAttach(Wagon wagon) {
-        // TODO ignores the predecessors before the head wagon, if any ?
-        if (isFreightTrain() && wagon instanceof FreightWagon ||
-                isPassengerTrain() && wagon instanceof PassengerWagon) {
-            if (getNumberOfWagons() <= this.engine.getMaxWagons()) {
-                return true;
-            }
-        }
 
-        return false;
+        int totalNumberOfWagons = wagon.getSequenceLength() + getNumberOfWagons();
+
+        if (isFreightTrain() && wagon instanceof PassengerWagon){
+            return false;
+        }
+        if (isPassengerTrain() && wagon instanceof FreightWagon) {
+            return false;
+        }
+        return findWagonById(wagon.getId()) == null && totalNumberOfWagons <= this.engine.getMaxWagons();
     }
 
     /**
