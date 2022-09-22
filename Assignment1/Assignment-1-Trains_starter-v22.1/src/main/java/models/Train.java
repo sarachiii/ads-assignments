@@ -263,9 +263,11 @@ public class Train {
      * @return whether the insertion could be completed successfully
      */
     public boolean insertAtPosition(int position, Wagon wagon) {
+        int firstWagonPosition = 1;
+
         if (canAttach(wagon)) {
             wagon.detachFront();
-            if (hasWagons() && position != 1) {
+            if (hasWagons() && position != firstWagonPosition) {
                 if (position <= this.getNumberOfWagons()) {
                     Wagon positionedWagon = findWagonAtPosition(position);
                     positionedWagon.detachFront();
@@ -323,8 +325,19 @@ public class Train {
      * @return whether the move could be completed successfully
      */
     public boolean splitAtPosition(int position, Train toTrain) {
-        // TODO
+        int firstWagonPosition = 1;
 
+        if (hasWagons() && position <= this.getNumberOfWagons() && position >= firstWagonPosition) {
+            Wagon positionedWagon = findWagonAtPosition(position);
+            if (toTrain.canAttach(positionedWagon)) {
+                positionedWagon.detachFront();
+                toTrain.attachToRear(positionedWagon);
+                if (position == firstWagonPosition) {
+                    this.firstWagon = null;
+                }
+                return true;
+            }
+        }
         return false;
     }
 
