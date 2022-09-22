@@ -188,6 +188,10 @@ public class Train {
      */
     public boolean canAttach(Wagon wagon) {
 
+        if (wagon == null){
+            return false;
+        }
+
         int totalNumberOfWagons = wagon.getSequenceLength() + getNumberOfWagons();
 
         if (isFreightTrain() && wagon instanceof PassengerWagon) {
@@ -359,7 +363,7 @@ public class Train {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (int i = 1; i < getNumberOfWagons(); i++) {
+        for (int i = 1; i <= getNumberOfWagons(); i++) {
             s.append(findWagonAtPosition(i));
         }
         return engine.toString() + s + " with " + getNumberOfWagons() + " wagons from " + getOrigin() + " to " + getDestination();
