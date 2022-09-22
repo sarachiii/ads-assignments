@@ -334,9 +334,9 @@ public class Train {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-//        for (Wagon wagon : wagons) {
-//            s.append(wagon.toString()); //nullpointerexception fout
-//        }
+        for (int i = 1; i < getNumberOfWagons(); i++) {
+            s.append(findWagonAtPosition(i));
+        }
         return engine.toString() + s + " with " + getNumberOfWagons() + " wagons from " + getOrigin() + " to " + getDestination();
     }
 }
