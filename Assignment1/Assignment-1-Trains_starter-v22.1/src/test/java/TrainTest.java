@@ -282,9 +282,6 @@ public class TrainTest {
 
         assertTrue(trainWithoutWagons.insertAtPosition(3, passengerTrain.getLastWagonAttached()),
                 "can insert a single wagon immediately before the last wagon in a train");
-        System.out.println(trainWithoutWagons.findWagonAtPosition(2));
-        System.out.println(trainWithoutWagons.findWagonAtPosition(3));
-        System.out.println(trainWithoutWagons.findWagonAtPosition(4));
         assertEquals(8004, trainWithoutWagons.findWagonAtPosition(3).getId(),
                 "insertAtPosition should disconnect and insert the given head wagon");
 

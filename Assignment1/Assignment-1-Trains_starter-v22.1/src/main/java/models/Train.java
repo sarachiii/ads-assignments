@@ -266,12 +266,12 @@ public class Train {
         if (canAttach(wagon)) {
             wagon.detachFront();
             if (hasWagons() && position != 1) {
-                if (position < this.getNumberOfWagons()) {
+                if (position <= this.getNumberOfWagons()) {
                     Wagon positionedWagon = findWagonAtPosition(position);
                     positionedWagon.detachFront();
                     if (positionedWagon != this.firstWagon) {
                         int previousPosition = position - 1;
-                        wagon.attachTail(positionedWagon);
+                        wagon.getLastWagonAttached().attachTail(positionedWagon);
                         findWagonAtPosition(previousPosition).attachTail(wagon);
                     }
                 }
@@ -296,8 +296,17 @@ public class Train {
      * @return whether the move could be completed successfully
      */
     public boolean moveOneWagon(int wagonId, Train toTrain) {
-        // TODO
-
+        if (toTrain.canAttach(findWagonById(wagonId))) {
+            if (hasWagons()) {
+                Wagon wagonToRemoved = findWagonById(wagonId);
+                if (wagonToRemoved == this.firstWagon) {
+                    this.firstWagon = wagonToRemoved.getNextWagon();
+                }
+                wagonToRemoved.removeFromSequence();
+                toTrain.attachToRear(wagonToRemoved);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -327,8 +336,11 @@ public class Train {
      * (No change if the train has no wagons or only one wagon)
      */
     public void reverse() {
-        // TODO
-
+        if (hasWagons() && this.getNumberOfWagons() > 1) {
+            Wagon lastWagon = firstWagon.getLastWagonAttached();
+            this.firstWagon.reverseSequence();
+            firstWagon = lastWagon;
+        }
     }
 
     @Override
