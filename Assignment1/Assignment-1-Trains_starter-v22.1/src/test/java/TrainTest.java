@@ -131,7 +131,6 @@ public class TrainTest {
         // check final wagon
         assertEquals( 40, ((PassengerWagon)(Object)passengerTrain.getLastWagonAttached()).getNumberOfSeats());
         assertEquals( 30000, ((FreightWagon)(Object)freightTrain.getLastWagonAttached()).getMaxWeight());
-        //System.out.println(passengerTrain);
 
         // check toString
         assertTrue(freightTrain.toString().indexOf(" from Amsterdam to Berlin") > 0);
@@ -278,8 +277,6 @@ public class TrainTest {
         assertEquals(8005, trainWithoutWagons.findWagonAtPosition(3).getId(),
                 "insertAtPosition should disconnect and insert the given head wagon");
 
-        System.out.println(passengerTrain.getLastWagonAttached() + " Wagon to be attached");
-
         assertTrue(trainWithoutWagons.insertAtPosition(3, passengerTrain.getLastWagonAttached()),
                 "can insert a single wagon immediately before the last wagon in a train");
         assertEquals(8004, trainWithoutWagons.findWagonAtPosition(3).getId(),
@@ -394,4 +391,13 @@ public class TrainTest {
         trainWithoutWagons.reverse();
         assertEquals(0, trainWithoutWagons.getNumberOfWagons());
     }
+
+    @Test
+    public void T23_checkInsertAtWrongPosition() {
+        assertFalse(trainWithoutWagons.insertAtPosition(0,freightWagon1),
+                ("The position does not exist"));
+        assertFalse(passengerTrain.insertAtPosition(9,passengerWagon1),
+                ("You can only insert 1 position behind the last wagon"));
+    }
+    //TODO Make a test to check if canAttach works with a passenger wagon and a freight wagon in one sequence
 }
