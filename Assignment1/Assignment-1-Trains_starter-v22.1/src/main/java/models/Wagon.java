@@ -66,7 +66,7 @@ public abstract class Wagon {
     public int getSequenceLength() {
 
         Wagon currentWagon = this;
-        int length = 1; //length of the sequence
+        int length = 1; // initial length of the sequence
 
         while (currentWagon.hasNextWagon()) {
             currentWagon = currentWagon.getNextWagon();
@@ -90,18 +90,14 @@ public abstract class Wagon {
      */
     public void attachTail(Wagon tail) {
 
-        if (hasNextWagon()) {
-            throw new IllegalStateException(
-                    this.nextWagon + " has already been attached to " + this
-            );
-        } else if (tail.hasPreviousWagon()) {
-            throw new IllegalStateException(
-                    tail + " is already pulling " + tail.previousWagon
-            );
-        } else {
-            this.nextWagon = tail;
-            tail.previousWagon = this;
-        }
+        if (hasNextWagon())
+            throw new IllegalStateException(this.nextWagon + " has already been attached to " + this);
+
+        if (tail.hasPreviousWagon())
+            throw new IllegalStateException(tail + " is already pulling " + tail.previousWagon);
+
+        this.nextWagon = tail;
+        tail.previousWagon = this;
     }
 
     /**
@@ -119,9 +115,8 @@ public abstract class Wagon {
             firstWagonOfTail.previousWagon = null;
 
             return firstWagonOfTail;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -132,21 +127,18 @@ public abstract class Wagon {
      * or <code>null</code> if it had no previousWagon.
      */
     public Wagon detachFront() {
-
-        Wagon previousWagon = this.previousWagon;
-
         if (hasPreviousWagon()) {
+            Wagon previousWagon = this.previousWagon;
             previousWagon.nextWagon = null;
             this.previousWagon = null;
 
             return previousWagon;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
-     * Replaces the tail of the <code>front</code> wagon by this wagon and its connected successors
+     * Replaces the tail of the front wagon by this wagon and its connected successors
      * Before such reconfiguration can be made,
      * the method first disconnects this wagon from its predecessor,
      * and the <code>front</code> wagon from its current tail.
@@ -154,9 +146,9 @@ public abstract class Wagon {
      * @param front the wagon to which this wagon must be attached to.
      */
     public void reAttachTo(Wagon front) {
-        this.detachFront();
-        front.detachTail();
-        front.attachTail(this);
+        this.detachFront(); // Disconnect wagon from its predecessor
+        front.detachTail(); // Disconnect front wagon from its current tail
+        front.attachTail(this); // Attaches the tail of this wagon and its successors to the front wagon
     }
 
     /**
