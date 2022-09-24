@@ -188,7 +188,8 @@ public class Train {
      */
     public boolean canAttach(Wagon wagon) {
 
-        if (wagon == null){
+        // If the wagon is null, it's invalid
+        if (wagon == null) {
             return false;
         }
 
@@ -267,23 +268,44 @@ public class Train {
      * @return whether the insertion could be completed successfully
      */
     public boolean insertAtPosition(int position, Wagon wagon) {
-        int firstWagonPosition = 1;
+        final int firstWagonPosition = 1;
+
+        // If position is invalid return false
+        if (position < firstWagonPosition || position > getNumberOfWagons() + 1) {
+            return false;
+        }
+
+        // If the train has no wagons or the position is the first position, insert wagon at front
+        if (!hasWagons() || position == firstWagonPosition) {
+            return insertAtFront(wagon);
+        }
+
+        // If the position is behind the last wagon, attach wagon to rear
+        if (position == getNumberOfWagons() + 1) {
+            return attachToRear(wagon);
+        }
 
         if (canAttach(wagon)) {
             wagon.detachFront();
-            if (hasWagons() && position != firstWagonPosition) {
-                if (position <= this.getNumberOfWagons()) {
-                    Wagon positionedWagon = findWagonAtPosition(position);
-                    positionedWagon.detachFront();
-                    if (positionedWagon != this.firstWagon) {
-                        int previousPosition = position - 1;
-                        wagon.getLastWagonAttached().attachTail(positionedWagon);
-                        findWagonAtPosition(previousPosition).attachTail(wagon);
-                    }
-                }
-                attachToRear(wagon);
+
+            // Find wagon at given position
+            Wagon positionedWagon = findWagonAtPosition(position);
+
+            // Detach its predecessors
+            positionedWagon.detachFront();
+
+            // If the wagon in the position is not the first wagon
+            if (!positionedWagon.equals(this.firstWagon)) {
+
+                // Set the previous position
+                int previousPosition = position - 1;
+
+                // The wagon who was at the position will be attached at the end of the wagons sequence
+                wagon.getLastWagonAttached().attachTail(positionedWagon);
+
+                // The new wagon sequence will be attached to the previous position
+                findWagonAtPosition(previousPosition).attachTail(wagon);
             }
-            insertAtFront(wagon);
             return true;
         }
         return false;
@@ -302,16 +324,22 @@ public class Train {
      * @return whether the move could be completed successfully
      */
     public boolean moveOneWagon(int wagonId, Train toTrain) {
-        if (toTrain.canAttach(findWagonById(wagonId))) {
-            if (hasWagons()) {
-                Wagon wagonToRemoved = findWagonById(wagonId);
-                if (wagonToRemoved == this.firstWagon) {
-                    this.firstWagon = wagonToRemoved.getNextWagon();
-                }
-                wagonToRemoved.removeFromSequence();
-                toTrain.attachToRear(wagonToRemoved);
-                return true;
+        // Checks if the wagon found by ID can be attached to the train and if the train has wagons
+        if (toTrain.canAttach(findWagonById(wagonId)) && hasWagons()) {
+
+            // Set the wagon who will be removed
+            Wagon wagonToRemoved = findWagonById(wagonId);
+
+            // If the wagon who will be removed is the first wagon
+            // ,the trains new first wagon will be the wagon that came after the previous first wagon
+            if (wagonToRemoved == this.firstWagon) {
+                this.firstWagon = wagonToRemoved.getNextWagon();
             }
+
+            // remove the wagon from the sequence and attach it to the rear of the new train
+            wagonToRemoved.removeFromSequence();
+            toTrain.attachToRear(wagonToRemoved);
+            return true;
         }
         return false;
     }
@@ -331,16 +359,26 @@ public class Train {
     public boolean splitAtPosition(int position, Train toTrain) {
         int firstWagonPosition = 1;
 
-        if (hasWagons() && position <= this.getNumberOfWagons() && position >= firstWagonPosition) {
-            Wagon positionedWagon = findWagonAtPosition(position);
-            if (toTrain.canAttach(positionedWagon)) {
-                positionedWagon.detachFront();
-                toTrain.attachToRear(positionedWagon);
-                if (position == firstWagonPosition) {
-                    this.firstWagon = null;
-                }
-                return true;
+        // Returns false when the train has no wagons or if the position isn't valid
+        if (!hasWagons() || position < firstWagonPosition || position > getNumberOfWagons()) {
+            return false;
+        }
+
+        // Set the positioned wagon to the wagon found on the given position
+        Wagon positionedWagon = findWagonAtPosition(position);
+
+        // Checks if the train can attach the positioned wagon and its sequence
+        if (toTrain.canAttach(positionedWagon)) {
+
+            // Detach the wagon sequence and attaches it to the new train's rear
+            positionedWagon.detachFront();
+            toTrain.attachToRear(positionedWagon);
+
+            // Checks if the given position was the position of the first wagon, if so the train loses its first wagon
+            if (position == firstWagonPosition) {
+                this.firstWagon = null;
             }
+            return true;
         }
         return false;
     }

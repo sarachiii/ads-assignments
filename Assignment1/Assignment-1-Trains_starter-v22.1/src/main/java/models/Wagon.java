@@ -187,41 +187,50 @@ public abstract class Wagon {
      */
     public Wagon reverseSequence() {
         Wagon frontWagon = this;
-        Wagon detachedHead = frontWagon.previousWagon;
+        Wagon detachedHead = null;
 
-        if (detachedHead == null){
-            Wagon reversedWagon = frontWagon.getLastWagonAttached();
-            reversedWagon.detachFront();
-            reversedWagon.attachTail(frontWagon);
-            frontWagon = reversedWagon;
-        } else {
+        // Checks if the wagon had a previous wagon if so it will be set and detached from the wagons which are going to reverse
+        if (hasPreviousWagon()) {
+            detachedHead = previousWagon;
             detachedHead.detachTail();
-            Wagon reversedSequence = frontWagon.getLastWagonAttached();
-            reversedSequence.detachFront();
-            reversedSequence.attachTail(frontWagon);
-            frontWagon = reversedSequence;
         }
 
+        // Set the reversed wagon, so it can be set as the front wagon later on
+        Wagon reversedWagon = frontWagon.getLastWagonAttached();
+
+        // Set the current wagon
         Wagon currentWagon = frontWagon;
 
-        while (hasNextWagon()){
+        // Keep looping while the current wagon has a next wagon
+        while (hasNextWagon()) {
+            // set the reversed wagon from the sequence and the wagon who will become detached during the process
             Wagon reversedSequence = currentWagon.getLastWagonAttached();
-            Wagon detachedWagon = currentWagon.nextWagon;
+            Wagon detachedWagon = currentWagon.previousWagon;
+
+            // Detach the front of both the reversed sequence wagon and current wagon
             reversedSequence.detachFront();
-            currentWagon.detachTail();
+            currentWagon.detachFront();
+
+            // Checks if the detached wagon is present
             if (detachedWagon != null) {
-                detachedWagon.reAttachTo(reversedSequence);
+                // Detaches and attaches the tail of the detached wagon to the reversed sequence wagon
+                detachedWagon.detachTail();
+                detachedWagon.attachTail(reversedSequence);
             }
-            reversedSequence.reAttachTo(currentWagon);
-            currentWagon = reversedSequence;
+            // Attach the tail of the reserved sequence wagon to the current wagon
+            reversedSequence.attachTail(currentWagon);
         }
 
-        if (detachedHead != null){
-            detachedHead.attachTail(currentWagon);
-            return frontWagon;
-        } else {
-            return frontWagon;
+        // Make the reversed wagon the new front
+        frontWagon = reversedWagon;
+
+        // Checks if the detachedHead is present
+        if (detachedHead != null) {
+            // Recconnects the reversed wagons back to the detached wagons
+            detachedHead.attachTail(frontWagon);
         }
+        // Return the front wagon
+        return frontWagon;
     }
 
     @Override
