@@ -195,6 +195,7 @@ public abstract class Wagon {
 
         // Keep looping while the current wagon has a next wagon
         while (hasNextWagon()) {
+
             // set the reversed wagon from the sequence and the wagon who will become detached during the process
             Wagon reversedSequence = currentWagon.getLastWagonAttached();
             Wagon detachedWagon = currentWagon.previousWagon;
@@ -205,10 +206,11 @@ public abstract class Wagon {
 
             // Checks if the detached wagon is present
             if (detachedWagon != null) {
+
                 // Detaches and attaches the tail of the detached wagon to the reversed sequence wagon
-                detachedWagon.detachTail();
                 detachedWagon.attachTail(reversedSequence);
             }
+
             // Attach the tail of the reserved sequence wagon to the current wagon
             reversedSequence.attachTail(currentWagon);
         }
@@ -218,9 +220,11 @@ public abstract class Wagon {
 
         // Checks if the detachedHead is present
         if (detachedHead != null) {
-            // Reconnects the reversed wagons back to the detached wagons
+
+            // Recconnects the reversed wagons back to the detached wagons
             detachedHead.attachTail(frontWagon);
         }
+
         // Return the front wagon
         return frontWagon;
     }
