@@ -218,7 +218,7 @@ public abstract class Wagon {
 
         // Checks if the detachedHead is present
         if (detachedHead != null) {
-            // Recconnects the reversed wagons back to the detached wagons
+            // Reconnects the reversed wagons back to the detached wagons
             detachedHead.attachTail(frontWagon);
         }
         // Return the front wagon

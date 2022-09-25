@@ -217,13 +217,13 @@ public class Train {
             return false;
         }
 
-        // The total number of wagons that the train has combined with the number of wagons behind the head wagon
-        int totalNumberOfWagons = wagon.getSequenceLength() + getNumberOfWagons();
-
         // Verifies if the type of wagon matches its type of train
         if ((isFreightTrain() && wagon instanceof PassengerWagon) || (isPassengerTrain() && wagon instanceof FreightWagon)) {
             return false;
         }
+
+        // The total number of wagons that the train has combined with the number of wagons behind the head wagon
+        int totalNumberOfWagons = wagon.getSequenceLength() + getNumberOfWagons();
 
         // returns whether there is an already existing wagon with the same id,
         // and if the total amount of wagons is less than the max allowed wagons of the engine
