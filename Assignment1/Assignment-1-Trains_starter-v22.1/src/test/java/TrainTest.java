@@ -399,5 +399,27 @@ public class TrainTest {
         assertFalse(passengerTrain.insertAtPosition(9,passengerWagon1),
                 ("You can only insert 1 position behind the last wagon"));
     }
+
+    @Test
+    public void T24_checkWrongWaggonInsertedAtStart() {
+        Wagon freightWagon3 = new FreightWagon(9013, 60000);
+        Wagon passgengerWagon4 = new PassengerWagon(8014, 40);
+        assertFalse(freightTrain.insertAtPosition(1,passgengerWagon4),
+                ("The position does not exist"));
+        assertFalse(passengerTrain.insertAtPosition(1,freightWagon3),
+                ("You can only insert 1 position behind the last wagon"));
+    }
+
+    @Test
+    public void T25_checkWrongWaggonInsertedAtEnd() {
+        Wagon freightWagon3 = new FreightWagon(9013, 60000);
+        Wagon passgengerWagon4 = new PassengerWagon(8014, 40);
+        assertFalse(passengerTrain.insertAtPosition(4,freightWagon3),
+                ("freightWagon can't be attached to end of a  passenger train"));
+        assertFalse(freightTrain.insertAtPosition(3,passgengerWagon4),
+                ("passengerWagon can't be attached to end of a freight train"));
+    }
+
+
     //TODO Make a test to check if canAttach works with a passenger wagon and a freight wagon in one sequence
 }
