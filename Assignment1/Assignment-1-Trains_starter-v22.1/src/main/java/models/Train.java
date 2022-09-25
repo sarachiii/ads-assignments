@@ -6,18 +6,12 @@ public class Train {
     private final Locomotive engine;
     private Wagon firstWagon;
 
-    /* Representation invariants:
-        firstWagon == null || firstWagon.previousWagon == null
-        engine != null
-     */
-
     public Train(Locomotive engine, String origin, String destination) {
         this.engine = engine;
         this.destination = destination;
         this.origin = origin;
     }
 
-    /* three helper methods that are useful in other methods */
     public boolean hasWagons() {
         return firstWagon != null;
     }

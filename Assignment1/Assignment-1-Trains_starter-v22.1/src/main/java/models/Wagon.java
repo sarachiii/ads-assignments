@@ -3,15 +3,7 @@ package models;
 public abstract class Wagon {
     protected int id;               // some unique ID of a Wagon
     private Wagon nextWagon;        // another wagon that is appended at the tail of this wagon
-    // a.k.a. the successor of this wagon in a sequence
-    // set to null if no successor is connected
     private Wagon previousWagon;    // another wagon that is prepended at the front of this wagon
-    // a.k.a. the predecessor of this wagon in a sequence
-    // set to null if no predecessor is connected
-
-    // representation invariant propositions:
-    // tail-connection-invariant:   wagon.nextWagon == null or wagon == wagon.nextWagon.previousWagon
-    // front-connection-invariant:  wagon.previousWagon == null or wagon = wagon.previousWagon.nextWagon
 
     public Wagon(int wagonId) {
         this.id = wagonId;
@@ -221,7 +213,7 @@ public abstract class Wagon {
         // Checks if the detachedHead is present
         if (detachedHead != null) {
 
-            // Recconnects the reversed wagons back to the detached wagons
+            // Reconnects the reversed wagons back to the detached wagons
             detachedHead.attachTail(frontWagon);
         }
 
