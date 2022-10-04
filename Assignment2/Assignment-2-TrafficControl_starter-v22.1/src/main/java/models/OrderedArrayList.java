@@ -5,16 +5,14 @@ import java.util.Comparator;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
-public class OrderedArrayList<E>
-        extends ArrayList<E>
-        implements OrderedList<E> {
+public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> {
 
     protected Comparator<? super E> ordening;   // the comparator that has been used with the latest sort
     protected int nSorted;                      // the number of sorted items in the first section of the list
     // representation-invariant
-    //      all items at index positions 0 <= index < nSorted have been ordered by the given ordening comparator
-    //      other items at index position nSorted <= index < size() can be in any order amongst themselves
-    //              and also relative to the sorted section
+    // all items at index positions 0 <= index < nSorted have been ordered by the given ordening comparator
+    // other items at index position nSorted <= index < size() can be in any order amongst themselves
+    // and also relative to the sorted section
 
     public OrderedArrayList() {
         this(null);
@@ -48,9 +46,20 @@ public class OrderedArrayList<E>
     //  and sustain the representation invariant of OrderedArrayList
     //  (hint: only change nSorted as required to guarantee the representation invariant,
     //   do not invoke a sort or reorder items otherwise differently than is specified by the ArrayList contract)
+    @Override
+    public void add(int index, E element) {
+        super.add(index, element);
+    }
 
+    @Override
+    public E remove(int index) {
+        return super.remove(index);
+    }
 
-
+    @Override
+    public boolean remove(Object o) {
+        return super.remove(o);
+    }
 
     @Override
     public void sort() {
