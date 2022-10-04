@@ -31,6 +31,7 @@ public class Detection {
      * The licensePlate shall be matched with a car from the provided list.
      * If no matching car can be found, a new Car shall be instantiated with the given licensePlate and added to the list
      * (besides the license plate number there will be no other information available about this car)
+     *
      * @param textLine
      * @param cars     a list of known cars, ordered and searchable by licensePlate
      *                 (i.e. the indexOf method of the list shall only consider the licensePlate when comparing cars)
@@ -43,7 +44,7 @@ public class Detection {
 
         // extract the comma-separated fields from the textLine
         String[] fields = textLine.split(",");
-        if(fields.length < 3) return null; // If the textLine is incomplete return null
+        if (fields.length < 3) return null; // If the textLine is incomplete return null
         else {
             try {
                 String licensePlate = fields[0].trim(); // Get the licensePlate number from the textLine
@@ -77,13 +78,22 @@ public class Detection {
      * Validates a detection against the purple conditions for entering an environmentally restricted zone
      * I.e.:
      * Diesel trucks and diesel coaches with an emission category of below 6 may not enter a purple zone
+     *
      * @return a Violation instance if the detection saw an offence against the purple zone rule/
-     *          null if no offence was found.
+     * null if no offence was found.
      */
     public Violation validatePurple() {
-        // TODO validate that diesel trucks and diesel coaches have an emission category of 6 or above
 
+        CarType cartype = this.car.getCarType();
+        FuelType fuelType = this.car.getFuelType();
+        int emissionCategory = this.car.getEmissionCategory();
 
+        if (fuelType.equals(FuelType.valueOf("Diesel"))) {
+            if ((cartype.equals(CarType.valueOf("Truck")) && emissionCategory < 6) ||
+                    (cartype.equals(CarType.valueOf("Coach")) && emissionCategory < 6)) {
+                return new Violation(car, city);
+            }
+        }
         return null;
     }
 
