@@ -67,6 +67,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public void sort() {
         if (this.nSorted < this.size()) {
             this.sort(this.ordening);
+            System.out.println(this.ordening);
         }
     }
 
@@ -102,13 +103,26 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
      */
     public int indexOfByIterativeBinarySearch(E searchItem) {
 
-        // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
-        //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
+        int start = 0;
+        int end = nSorted;
 
+        if (start > end) return -1;
 
-        // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
+        while (start <= end) {
+            int midIndex = (start + end) / 2;
 
-
+            if (this.ordening.compare(searchItem, this.get(midIndex)) > 0) {
+                start = midIndex + 1;
+            } else if (this.ordening.compare(searchItem, this.get(midIndex)) < 0) {
+                end = midIndex - 1;
+            } else if (midIndex > nSorted) {
+                for (int i = nSorted; i < this.size(); i++) {
+                    if (searchItem == this) {
+                        return i;
+                    }
+                }
+            } else return midIndex;
+        }
         return -1;  // nothing was found ???
     }
 
