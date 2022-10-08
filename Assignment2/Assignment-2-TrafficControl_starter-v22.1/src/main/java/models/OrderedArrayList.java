@@ -18,7 +18,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         this(null);
     }
 
-    public OrderedArrayList(Comparator<? super E> ordening ) {
+    public OrderedArrayList(Comparator<? super E> ordening) {
         super();
         this.ordening = ordening;
         this.nSorted = 0;
@@ -65,6 +65,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public void sort() {
         if (this.nSorted < this.size()) {
             this.sort(this.ordening);
+            System.out.println(this.ordening);
         }
     }
 
@@ -72,7 +73,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public int indexOf(Object item) {
         // efficient search can be done only if you have provided an ordening for the list
         if (this.getOrdening() != null) {
-            return indexOfByIterativeBinarySearch((E)item);
+            return indexOfByIterativeBinarySearch((E) item);
         } else {
             return super.indexOf(item);
         }
@@ -94,19 +95,32 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
      * If the item is not found in the sorted section, the unsorted section of the arrayList shall be searched by linear search.
      * The found item shall yield a 0 result from the this.ordening comparator, and that need not to be in agreement with the .equals test.
      * Here we follow the comparator for ordening items and for deciding on equality.
-     * @param searchItem    the item to be searched on the basis of comparison by this.ordening
-     * @return              the position index of the found item in the arrayList, or -1 if no item matches the search item.
+     *
+     * @param searchItem the item to be searched on the basis of comparison by this.ordening
+     * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByIterativeBinarySearch(E searchItem) {
 
-        // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
-        //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
+        int start = 0;
+        int end = nSorted;
 
+        if (start > end) return -1;
 
+        while (start <= end) {
+            int midIndex = (start + end) / 2;
 
-        // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
-
-
+            if (this.ordening.compare(searchItem, this.get(midIndex)) > 0) {
+                start = midIndex + 1;
+            } else if (this.ordening.compare(searchItem, this.get(midIndex)) < 0) {
+                end = midIndex - 1;
+            } else if (midIndex > nSorted) {
+                for (int i = nSorted; i < this.size(); i++) {
+                    if (searchItem == this) {
+                        return i;
+                    }
+                }
+            } else return midIndex;
+        }
         return -1;  // nothing was found ???
     }
 
@@ -116,14 +130,14 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
      * If the item is not found in the sorted section, the unsorted section of the arrayList shall be searched by linear search.
      * The found item shall yield a 0 result from the this.ordening comparator, and that need not to be in agreement with the .equals test.
      * Here we follow the comparator for ordening items and for deciding on equality.
-     * @param searchItem    the item to be searched on the basis of comparison by this.ordening
-     * @return              the position index of the found item in the arrayList, or -1 if no item matches the search item.
+     *
+     * @param searchItem the item to be searched on the basis of comparison by this.ordening
+     * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByRecursiveBinarySearch(E searchItem) {
 
         // TODO implement a recursive binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
-
 
 
         // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
@@ -133,17 +147,17 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     }
 
 
-
     /**
      * finds a match of newItem in the list and applies the merger operator with the newItem to that match
      * i.e. the found match is replaced by the outcome of the merge between the match and the newItem
      * If no match is found in the list, the newItem is added to the list.
+     *
      * @param newItem
-     * @param merger    a function that takes two items and returns an item that contains the merged content of
-     *                  the two items according to some merging rule.
-     *                  e.g. a merger could add the value of attribute X of the second item
-     *                  to attribute X of the first item and then return the first item
-     * @return  whether a new item was added to the list or not
+     * @param merger  a function that takes two items and returns an item that contains the merged content of
+     *                the two items according to some merging rule.
+     *                e.g. a merger could add the value of attribute X of the second item
+     *                to attribute X of the first item and then return the first item
+     * @return whether a new item was added to the list or not
      */
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {
@@ -165,16 +179,16 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
     /**
      * calculates the total sum of contributions of all items in the list
-     * @param mapper    a function that calculates the contribution of a single item
-     * @return          the total sum of all contributions
+     *
+     * @param mapper a function that calculates the contribution of a single item
+     * @return the total sum of all contributions
      */
     @Override
-    public double aggregate(Function<E,Double> mapper) {
+    public double aggregate(Function<E, Double> mapper) {
         double sum = 0.0;
 
         // TODO loop over all items and use the mapper
         //  to calculate and accumulate the contribution of each item
-
 
 
         return sum;
