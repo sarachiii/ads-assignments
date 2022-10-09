@@ -185,14 +185,11 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
         if (matchedItemIndex < 0) {
             this.add(newItem);
-            return true;
         } else {
-            // TODO retrieve the matched item and
-            //  replace the matched item in the list with the merger of the matched item and the newItem
-
-
-            return false;
+            E matchedItem = this.get(matchedItemIndex);
+            merger.apply(newItem, matchedItem);
         }
+        return true;
     }
 
     /**
