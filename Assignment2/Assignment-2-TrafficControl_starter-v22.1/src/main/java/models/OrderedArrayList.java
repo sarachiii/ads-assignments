@@ -205,9 +205,9 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public double aggregate(Function<E, Double> mapper) {
         double sum = 0.0;
 
-        // TODO loop over all items and use the mapper
-        //  to calculate and accumulate the contribution of each item
-
+        for (E e : this) {
+            sum += (mapper.apply(e));
+        }
 
         return sum;
     }
