@@ -108,7 +108,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
         if (start > end) return -1;
 
-        while (start <= end) {
+        while (start < end) {
             int midIndex = (start + end) / 2;
 
             if (this.ordening.compare(searchItem, this.get(midIndex)) > 0) {
@@ -141,28 +141,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         int from = 0; // Start position
         int to = nSorted; // The number of sorted items in the first section of the list
 
-        if (from <= to) {
-            from += modifiedStart;
-            to -= modifiedEnd;
-            int midIndex = (from + to) / 2; // take the index of the middle of the list
-            if (this.ordening.compare(searchItem, this.get(midIndex)) > 0) {
-                modifiedStart += 1;
-                return indexOfByRecursiveBinarySearch(searchItem);
-            } else if (this.ordening.compare(searchItem, this.get(midIndex)) < 0) {
-                modifiedEnd += 1;
-                return indexOfByRecursiveBinarySearch(searchItem);
-            } else {
-                return midIndex;
-            }
-        } else {
-            // If no match was found, a linear search has to be done in the unsorted section of the list
-            for (int i = nSorted; i < this.size(); i++) {
-                if (searchItem == this) {
-                    return i;
-                }
-            }
-        }
-        return -1; // return -1 if the item wasn't found
+        return indexOfByRecursiveBinarySearch(searchItem, from, to);
     }
 
 
@@ -203,7 +182,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         double sum = 0.0;
 
         for (E e : this) {
-            sum += (mapper.apply(e));
+            sum += mapper.apply(e);
         }
 
         return sum;

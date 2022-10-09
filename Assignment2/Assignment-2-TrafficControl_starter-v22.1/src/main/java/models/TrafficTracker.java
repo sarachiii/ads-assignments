@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 public class TrafficTracker {
@@ -18,8 +19,8 @@ public class TrafficTracker {
         // TODO initialize cars with an empty ordered list which sorts items by licensePlate.
         //  initalize violations with an empty ordered list which sorts items by car and city.
         //  Use your generic implementation class OrderedArrayList
-
-
+        this.cars = new OrderedArrayList<>();
+        this.violations = new OrderedArrayList<>();
     }
 
     /**
@@ -184,13 +185,9 @@ public class TrafficTracker {
             String line = scanner.nextLine();
             numberOfLines++;
 
-            // TODO convert the line to an instance of E
+            E convertedItem = converter.apply(line);
 
-
-
-            // TODO add a successfully converted item to the list of items
-
-
+            items.add(convertedItem);
         }
 
         //System.out.printf("Imported %d lines from %s.\n", numberOfLines, file.getPath());
