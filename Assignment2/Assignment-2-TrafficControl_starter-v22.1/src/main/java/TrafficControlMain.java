@@ -1,13 +1,9 @@
-import models.Car;
 import models.TrafficTracker;
-import models.Violation;
 
-import java.util.List;
 import java.util.Locale;
 
 public class TrafficControlMain {
     private final static String VAULT_NAME = "/2022-09";
-    //private final static String VAULT_NAME = "/test1";
 
     public static void main(String[] args) {
         Locale.setDefault(Locale.ENGLISH);

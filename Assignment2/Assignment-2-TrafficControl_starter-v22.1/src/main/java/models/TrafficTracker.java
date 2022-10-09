@@ -69,10 +69,15 @@ public class TrafficTracker {
             //  retrieve a list of all files and sub folders in this directory
             File[] filesInDirectory = Objects.requireNonNullElse(file.listFiles(), new File[0]);
 
-            // TODO recursively process all files and sub folders from the filesInDirectory list.
-            //  also track the total number of offences found
-
-
+            for (int i = 0; i < filesInDirectory.length; i++) {
+                if(filesInDirectory[i].isFile()){
+//                    System.out.println(filesInDirectory[i].getName());
+                    totalNumberOfOffences += this.mergeDetectionsFromFile(filesInDirectory[i]);
+                } else if (filesInDirectory[i].isDirectory()) {
+                    mergeDetectionsFromVaultRecursively(filesInDirectory[i]);
+                }
+            }
+//            System.out.println(file.getAbsolutePath());
 
         } else if (file.getName().matches(TRAFFIC_FILE_PATTERN)) {
             // the file is a regular file that matches the target pattern for raw detection files
@@ -96,10 +101,7 @@ public class TrafficTracker {
         // use a regular ArrayList to load the raw detection info from the file
         List<Detection> newDetections = new ArrayList<>();
 
-        // TODO import all detections from the specified file into the newDetections list
-        //  using the importItemsFromFile helper method and the Detection.fromLine parser.
-
-
+        importItemsFromFile(newDetections, file, line -> Detection.fromLine(line,cars));
 
         System.out.printf("Imported %d detections from %s.\n", newDetections.size(), file.getPath());
 
@@ -109,9 +111,13 @@ public class TrafficTracker {
         //  merge any resulting offences into this.violations, accumulating offences per car and per city
         //  also keep track of the totalNumberOfOffences for reporting
 
-
-
-
+        for (int i = 0; i < newDetections.size(); i++) {
+            if(newDetections.get(i).validatePurple() != null) {
+                Violation newDetection = newDetections.get(i).validatePurple();
+                this.violations.merge(newDetection, (newViolation, oldViolation) -> oldViolation.combineOffencesCounts(newViolation));
+                totalNumberOfOffences++;
+            }
+        }
         return totalNumberOfOffences;
     }
 
@@ -189,8 +195,6 @@ public class TrafficTracker {
 
             items.add(convertedItem);
         }
-
-        //System.out.printf("Imported %d lines from %s.\n", numberOfLines, file.getPath());
         return numberOfLines;
     }
 
