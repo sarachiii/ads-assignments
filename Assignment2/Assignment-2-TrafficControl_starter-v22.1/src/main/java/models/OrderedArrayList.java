@@ -104,26 +104,30 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public int indexOfByIterativeBinarySearch(E searchItem) {
 
         int start = 0;
-        int end = nSorted;
+        int end = nSorted -1;
 
-        if (start > end) return -1;
+        if (start == this.size()) return -1;
 
-        while (start < end) {
+        while (start <= end) {
             int midIndex = (start + end) / 2;
+            int compareResult = this.ordening.compare(searchItem,this.get(midIndex));
 
-            if (this.ordening.compare(searchItem, this.get(midIndex)) > 0) {
+            if (compareResult == 0) {
+                return midIndex;
+            } else if (compareResult > 0) {
                 start = midIndex + 1;
-            } else if (this.ordening.compare(searchItem, this.get(midIndex)) < 0) {
+            } else if (compareResult < 0) {
                 end = midIndex - 1;
-            } else if (midIndex > nSorted) {
-                for (int i = nSorted; i < this.size(); i++) {
-                    if (searchItem == this) {
-                        return i;
-                    }
-                }
-            } else return midIndex;
+            }
         }
-        return -1;  // nothing was found ???
+
+        for (int i = nSorted; i < this.size(); i++) {
+            if (searchItem == this.get(i)) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /**
@@ -139,28 +143,28 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public int indexOfByRecursiveBinarySearch(E searchItem) {
 
         int from = 0; // Start position
-        int to = nSorted; // The number of sorted items in the first section of the list
+        int to = nSorted -1; // The number of sorted items in the first section of the list
 
         return indexOfByRecursiveBinarySearch(searchItem, from, to);
     }
 
-    public int indexOfByRecursiveBinarySearch(E searchitem,int from,int to){
+    public int indexOfByRecursiveBinarySearch(E searchItem,int from,int to){
 
         if (from <= to) {
             int midIndex = (from + to) / 2; // take the index of the middle of the list
-            if (this.ordening.compare(searchitem, this.get(midIndex)) > 0) {
+            if (this.ordening.compare(this.get(midIndex),searchItem) > 0) {
                 from = midIndex + 1;
-                return indexOfByRecursiveBinarySearch(searchitem,from,to);
-            } else if (this.ordening.compare(searchitem, this.get(midIndex)) < 0) {
+                return indexOfByRecursiveBinarySearch(searchItem,from,to);
+            } else if (this.ordening.compare(this.get(midIndex),searchItem) < 0) {
                 to = midIndex - 1;
-                return indexOfByRecursiveBinarySearch(searchitem,from,to);
+                return indexOfByRecursiveBinarySearch(searchItem,from,to);
             } else {
                 return midIndex;
             }
         } else {
             // If no match was found, a linear search has to be done in the unsorted section of the list
             for (int i = nSorted; i < this.size(); i++) {
-                if (searchitem == this) {
+                if (searchItem == this.get(i)) {
                     return i;
                 }
             }
