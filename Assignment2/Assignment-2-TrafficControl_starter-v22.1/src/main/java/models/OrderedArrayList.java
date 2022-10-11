@@ -152,10 +152,10 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
         if (from <= to) {
             int midIndex = (from + to) / 2; // take the index of the middle of the list
-            if (this.ordening.compare(this.get(midIndex),searchItem) > 0) {
+            if (this.ordening.compare(searchItem,this.get(midIndex)) > 0) {
                 from = midIndex + 1;
                 return indexOfByRecursiveBinarySearch(searchItem,from,to);
-            } else if (this.ordening.compare(this.get(midIndex),searchItem) < 0) {
+            } else if (this.ordening.compare(searchItem,this.get(midIndex)) < 0) {
                 to = midIndex - 1;
                 return indexOfByRecursiveBinarySearch(searchItem,from,to);
             } else {
