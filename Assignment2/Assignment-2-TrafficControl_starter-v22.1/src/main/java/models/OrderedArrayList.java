@@ -144,6 +144,30 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         return indexOfByRecursiveBinarySearch(searchItem, from, to);
     }
 
+    public int indexOfByRecursiveBinarySearch(E searchitem,int from,int to){
+
+        if (from <= to) {
+            int midIndex = (from + to) / 2; // take the index of the middle of the list
+            if (this.ordening.compare(searchitem, this.get(midIndex)) > 0) {
+                from = midIndex + 1;
+                return indexOfByRecursiveBinarySearch(searchitem,from,to);
+            } else if (this.ordening.compare(searchitem, this.get(midIndex)) < 0) {
+                to = midIndex - 1;
+                return indexOfByRecursiveBinarySearch(searchitem,from,to);
+            } else {
+                return midIndex;
+            }
+        } else {
+            // If no match was found, a linear search has to be done in the unsorted section of the list
+            for (int i = nSorted; i < this.size(); i++) {
+                if (searchitem == this) {
+                    return i;
+                }
+            }
+        }
+        return -1; // return -1 if the item wasn't found
+    }
+
 
     /**
      * finds a match of newItem in the list and applies the merger operator with the newItem to that match
