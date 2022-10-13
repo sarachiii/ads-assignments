@@ -50,11 +50,13 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     //   do not invoke a sort or reorder items otherwise differently than is specified by the ArrayList contract)
     @Override
     public void add(int index, E element) {
+        if (index <= nSorted) this.nSorted = index;
         super.add(index, element);
     }
 
     @Override
     public E remove(int index) {
+        if (index <= nSorted) this.nSorted = index;
         return super.remove(index);
     }
 
