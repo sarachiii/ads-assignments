@@ -30,6 +30,4 @@ public class TrafficControlMain {
         System.out.printf("Top 5 cities with largest total number of offences are:\n%s\n", trafficTracker.topViolationsByCity(5));
 
     }
-
-
 }

@@ -122,7 +122,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         }
 
         for (int i = nSorted; i < this.size(); i++) {
-            if (searchItem == this.get(i)) {
+            if (this.ordening.compare(searchItem,this.get(i)) == 0) {
                 return i;
             }
         }
@@ -164,7 +164,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         } else {
             // If no match was found, a linear search has to be done in the unsorted section of the list
             for (int i = nSorted; i < this.size(); i++) {
-                if (searchItem == this.get(i)) {
+                if (this.ordening.compare(searchItem,this.get(i)) == 0) {
                     return i;
                 }
             }
@@ -195,7 +195,8 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
             return true;
         } else {
             E matchedItem = this.get(matchedItemIndex);
-            merger.apply(newItem, matchedItem);
+            E mergedItem = merger.apply(newItem, matchedItem);
+            this.set(matchedItemIndex,mergedItem);
             return false;
         }
     }

@@ -99,15 +99,13 @@ public class TrafficTracker {
 
         System.out.printf("Imported %d detections from %s.\n", newDetections.size(), file.getPath());
 
-        int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the data in this file
+        int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the dataS in this file
 
         for (int i = 0; i < newDetections.size(); i++) {
             if(newDetections.get(i).validatePurple() != null) {
                 Violation newDetection = newDetections.get(i).validatePurple();
                 this.violations.merge(newDetection, Violation::combineOffencesCounts);
-                this.violations.sort();
-                totalNumberOfOffences++;
-                System.out.println(this.violations);
+                totalNumberOfOffences ++;
             }
         }
         return totalNumberOfOffences;
@@ -121,6 +119,7 @@ public class TrafficTracker {
     public double calculateTotalFines() {
 
         return this.violations.aggregate(
+
                 // TODO provide a calculator function for the specified fine scheme
                 //  of €25 per truck-offence and €35 per coach-offence
 
