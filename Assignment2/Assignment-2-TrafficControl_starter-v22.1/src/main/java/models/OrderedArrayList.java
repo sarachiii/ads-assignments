@@ -13,8 +13,6 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     // all items at index positions 0 <= index < nSorted have been ordered by the given ordening comparator
     // other items at index position nSorted <= index < size() can be in any order amongst themselves
     // and also relative to the sorted section
-    static int modifiedEnd;
-    static int modifiedStart;
 
     public OrderedArrayList() {
         this(null);
@@ -69,7 +67,6 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public void sort() {
         if (this.nSorted < this.size()) {
             this.sort(this.ordening);
-            System.out.println(this.ordening);
         }
     }
 
