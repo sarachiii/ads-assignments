@@ -54,12 +54,13 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
     @Override
     public E remove(int index) {
-        if (index <= nSorted) this.nSorted = index;
+        if (index <= nSorted) this.nSorted--;
         return super.remove(index);
     }
 
     @Override
     public boolean remove(Object o) {
+        this.nSorted--;
         return super.remove(o);
     }
 
@@ -142,7 +143,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
     public int indexOfByRecursiveBinarySearch(E searchItem) {
 
         int from = 0; // Start position
-        int to = nSorted -1; // The number of sorted items in the first section of the list
+        int to = nSorted - 1; // The number of sorted items in the first section of the list
 
         return indexOfByRecursiveBinarySearch(searchItem, from, to);
     }
@@ -191,11 +192,12 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
         if (matchedItemIndex < 0) {
             this.add(newItem);
+            return true;
         } else {
             E matchedItem = this.get(matchedItemIndex);
             merger.apply(newItem, matchedItem);
+            return false;
         }
-        return true;
     }
 
     /**

@@ -5,20 +5,18 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 public class TrafficTracker {
+
     private final String TRAFFIC_FILE_EXTENSION = ".txt";
     private final String TRAFFIC_FILE_PATTERN = ".+\\" + TRAFFIC_FILE_EXTENSION;
+    private static int totalNumberOfOffences = 0;
 
     private OrderedList<Car> cars;                  // the reference list of all known Cars registered by the RDW
     private OrderedList<Violation> violations;      // the accumulation of all offences by car and by city
 
     public TrafficTracker() {
-        // TODO initialize cars with an empty ordered list which sorts items by licensePlate.
-        //  initalize violations with an empty ordered list which sorts items by car and city.
-        //  Use your generic implementation class OrderedArrayList
         this.cars = new OrderedArrayList<>(Car :: compareTo);
         this.violations = new OrderedArrayList<>(Violation :: compareByLicensePlateAndCity);
     }
@@ -62,7 +60,6 @@ public class TrafficTracker {
      * @param file
      */
     private int mergeDetectionsFromVaultRecursively(File file) {
-        int totalNumberOfOffences = 0;
 
         if (file.isDirectory()) {
             // the file is a folder (a.k.a. directory)
@@ -71,20 +68,17 @@ public class TrafficTracker {
 
             for (int i = 0; i < filesInDirectory.length; i++) {
                 if(filesInDirectory[i].isFile()){
-//                    System.out.println(filesInDirectory[i].getName());
                     totalNumberOfOffences += this.mergeDetectionsFromFile(filesInDirectory[i]);
                 } else if (filesInDirectory[i].isDirectory()) {
                     mergeDetectionsFromVaultRecursively(filesInDirectory[i]);
                 }
             }
-//            System.out.println(file.getAbsolutePath());
 
         } else if (file.getName().matches(TRAFFIC_FILE_PATTERN)) {
             // the file is a regular file that matches the target pattern for raw detection files
             // process the content of this file and merge the offences found into this.violations
             totalNumberOfOffences += this.mergeDetectionsFromFile(file);
         }
-
         return totalNumberOfOffences;
     }
 
@@ -107,15 +101,13 @@ public class TrafficTracker {
 
         int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the data in this file
 
-        // TODO validate all detections against the purple criteria and
-        //  merge any resulting offences into this.violations, accumulating offences per car and per city
-        //  also keep track of the totalNumberOfOffences for reporting
-
         for (int i = 0; i < newDetections.size(); i++) {
             if(newDetections.get(i).validatePurple() != null) {
                 Violation newDetection = newDetections.get(i).validatePurple();
-                this.violations.merge(newDetection, (newViolation, oldViolation) -> oldViolation.combineOffencesCounts(newViolation));
+                this.violations.merge(newDetection, Violation::combineOffencesCounts);
+                this.violations.sort();
                 totalNumberOfOffences++;
+                System.out.println(this.violations);
             }
         }
         return totalNumberOfOffences;
