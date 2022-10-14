@@ -41,11 +41,6 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         this.nSorted = this.size();
     }
 
-    // TODO override the ArrayList.add(index, item), ArrayList.remove(index) and Collection.remove(object) methods
-    //  such that they both meet the ArrayList contract of these methods (see ArrayList JavaDoc)
-    //  and sustain the representation invariant of OrderedArrayList
-    //  (hint: only change nSorted as required to guarantee the representation invariant,
-    //   do not invoke a sort or reorder items otherwise differently than is specified by the ArrayList contract)
     @Override
     public void add(int index, E element) {
         if (index <= nSorted) this.nSorted = index;

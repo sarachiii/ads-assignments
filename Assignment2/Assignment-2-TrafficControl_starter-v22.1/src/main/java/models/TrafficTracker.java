@@ -118,12 +118,16 @@ public class TrafficTracker {
      */
     public double calculateTotalFines() {
 
+        double truckOffence = 25.0;
+        double coachOffence = 35.0;
         return this.violations.aggregate(
-
-                // TODO provide a calculator function for the specified fine scheme
-                //  of €25 per truck-offence and €35 per coach-offence
-
-                null  // replace this reference
+                violation -> {
+                        if (violation.getCar().getCarType() == Car.CarType.Truck) {
+                            return truckOffence * violation.getOffencesCount();
+                        } else if (violation.getCar().getCarType() == Car.CarType.Coach){
+                            return coachOffence * violation.getOffencesCount();
+                        } else return null;
+                }
         );
     }
 
