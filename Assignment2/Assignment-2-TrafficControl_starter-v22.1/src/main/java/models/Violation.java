@@ -17,6 +17,14 @@ public class Violation {
         return result;
     }
 
+    public static int compareByLicensePlate(Violation v1, Violation v2) {
+        return v1.car.getLicensePlate().compareTo(v2.car.getLicensePlate());
+    }
+
+    public static int compareByCity(Violation v1, Violation v2) {
+        return v1.getCity().compareTo(v2.city);
+    }
+
     /**
      * Aggregates this violation with the other violation by adding their counts and
      * nullifying identifying attributes car and/or city that do not match
@@ -56,6 +64,10 @@ public class Violation {
 
     @Override
     public String toString() {
-        return car.getLicensePlate() + "/" + city + "/" + offencesCount;
+        String licensePlate = null;
+        if (this.getCar() != null) {
+            licensePlate = car.getLicensePlate();
+        }
+        return licensePlate + "/" + city + "/" + offencesCount;
     }
 }
