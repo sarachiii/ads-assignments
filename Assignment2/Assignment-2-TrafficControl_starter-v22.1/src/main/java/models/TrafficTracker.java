@@ -168,8 +168,14 @@ public class TrafficTracker {
             list.merge(violation, Violation::combineOffencesCounts);
         }
         list.sort(Comparator.comparing(Violation::getOffencesCount).reversed());
+
+        if (topNumber > list.size()) {
+            System.out.printf("This array does not have %d violations the topNumber will be set to the list size :%d\n"
+                    , topNumber, list.size());
+            topNumber = list.size();
+        }
         return list.subList(0,topNumber);
-    }
+}
 
 
     /**

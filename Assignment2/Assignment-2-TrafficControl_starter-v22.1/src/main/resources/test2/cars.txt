@@ -1,0 +1,9 @@
+69-EE-KG, 3, Car, Gasoline, 2004-03-29
+VZB-35-B, 7, Van, Electric, 2017-08-29
+QNA-25-X, 5, Car, Diesel, 2015-11-29
+923-LN-6, 5, Car, Gasoline, 2021-03-29
+450-HN-1, 7, Car, Gasoline, 2021-12-29
+569-XT-4, 1, Truck, Diesel, 2021-02-28
+429-ME-3, 5, Coach, Diesel, 2020-02-29
+CKX-65-A, 5, Coach, Diesel, 2016-12-29
+870-GQ-4, 4, Truck, Diesel, 2019-09-29
