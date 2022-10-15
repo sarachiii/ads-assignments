@@ -47,16 +47,14 @@ public class DetectionTest2 {
     public void shouldReturnViolation() {
         Detection detection7 = Detection.fromLine(" VV-11-BB , Amsterdam , 2022-10-01T12:11:10", cars);
 
-        Violation violation1 = new Violation(mercedes, "Amsterdam");
         assertNotNull(detection7.validatePurple());
-        assertEquals(violation1.getCar(), detection7.validatePurple().getCar());
-        assertEquals(violation1.getCity(), detection7.validatePurple().getCity());
+        assertEquals(mercedes, detection7.validatePurple().getCar());
+        assertEquals("Amsterdam", detection7.validatePurple().getCity());
 
         Detection detection8 = Detection.fromLine("1-CCC-01, Maastricht , 2022-10-01T12:11:10", cars);
 
-        Violation violation2 = new Violation(daf1, "Maastricht");
         assertNotNull(detection8.validatePurple());
-        assertEquals(violation2.getCar(), detection8.validatePurple().getCar());
-        assertEquals(violation2.getCity(), detection8.validatePurple().getCity());
+        assertEquals(daf1, detection8.validatePurple().getCar());
+        assertEquals("Maastricht", detection8.validatePurple().getCity());
     }
 }

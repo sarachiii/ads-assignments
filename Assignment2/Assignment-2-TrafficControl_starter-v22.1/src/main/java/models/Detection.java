@@ -85,6 +85,8 @@ public class Detection {
         FuelType fuelType = this.car.getFuelType();
         int emissionCategory = this.car.getEmissionCategory();
 
+        // If a car drives on diesel, and it's a truck or coach with an emission
+        // category of below 6, a new violation has to be returned
         if (fuelType.equals(FuelType.valueOf("Diesel"))) {
             if ((cartype.equals(CarType.valueOf("Truck")) && emissionCategory < 6) ||
                     (cartype.equals(CarType.valueOf("Coach")) && emissionCategory < 6)) {
