@@ -9,12 +9,15 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrafficTrackerTest2 {
-    private final static String VAULT_NAME = "/test1";
+
+    private final static String VAULT_NAME = "/test2";
 
     TrafficTracker trafficTracker;
+    OrderedList<Violation> violations;
 
     @BeforeEach
     private void setup() {
+
         Locale.setDefault(Locale.ENGLISH);
         trafficTracker = new TrafficTracker();
 
@@ -26,10 +29,28 @@ public class TrafficTrackerTest2 {
     }
 
     @Test
-    public void calculateTotalFines(){
-        assertEquals(7, trafficTracker.getViolations().stream().mapToInt(Violation::getOffencesCount).sum(),
+    public void calculateTotalFines() {
+
+        double coachOffencePrice = 35.0;
+        double truckOffencePrice = 25.0;
+
+        int coachViolations = 0;
+        int truckViolations = 0;
+
+        for (Violation violation : this.violations) {
+            if (violation.getCar().getCarType() == Car.CarType.Coach) {
+                coachViolations += violation.getOffencesCount();
+            } else if (violation.getCar().getCarType() == Car.CarType.Truck) {
+                truckViolations += violation.getOffencesCount();
+            }
+        }
+
+        assertEquals(40, trafficTracker.getViolations().stream().mapToInt(Violation::getOffencesCount).sum(),
                 "Total number of offences across all Violation instances did not match.");
-        assertEquals(175.0, trafficTracker.calculateTotalFines(),
+        assertEquals(19, coachViolations, "Total number of coach offences did not match");
+        assertEquals(21, truckViolations, "Total number of truck offences did not match");
+        double sum = (coachViolations * coachOffencePrice) + (truckViolations * truckOffencePrice);
+        assertEquals(sum, trafficTracker.calculateTotalFines(),
                 "Total revenue of fines from all offences did not match");
     }
 

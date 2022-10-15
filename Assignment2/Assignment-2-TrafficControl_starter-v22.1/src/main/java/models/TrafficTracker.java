@@ -126,13 +126,10 @@ public class TrafficTracker {
         double coachOffense = 35.0;
 
         return this.violations.aggregate(
-                // TODO provide a calculator function for the specified fine scheme
-                //  of €25 per truck-offence and €35 per coach-offence
-
                 violation -> {
-                    if (violation.getCar().getCarType() == Car.CarType.Truck){
+                    if (violation.getCar().getCarType() == Car.CarType.Truck) {
                         return truckOffense * violation.getOffencesCount();
-                    } else if (violation.getCar().getCarType() == Car.CarType.Coach){
+                    } else if (violation.getCar().getCarType() == Car.CarType.Coach) {
                         return coachOffense * violation.getOffencesCount();
                     } else return null;
                 }
@@ -147,7 +144,7 @@ public class TrafficTracker {
      * @return a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCar(int topNumber) {
-        return createMergeAndSortList(Violation::compareByLicensePlate,topNumber);
+        return createMergeAndSortList(Violation::compareByLicensePlate, topNumber);
     }
 
     /**
@@ -158,7 +155,7 @@ public class TrafficTracker {
      * @return a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCity(int topNumber) {
-        return createMergeAndSortList(Violation::compareByCity,topNumber);
+        return createMergeAndSortList(Violation::compareByCity, topNumber);
     }
 
     private List<Violation> createMergeAndSortList(Comparator<Violation> comparator, int topNumber) {
