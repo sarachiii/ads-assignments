@@ -10,6 +10,7 @@ public class Detection {
     private final Car car;                  // the car that was detected
     private final String city;              // the name of the city where the detector was located
     private final LocalDateTime dateTime;   // date and time of the detection event
+    private final int maxEmission = 6;
 
     /* Representation Invariant:
      *      every Detection shall be associated with a valid Car
@@ -39,7 +40,7 @@ public class Detection {
 
         Detection newDetection = null;
 
-        // extract the comma-separated fields from the textLine
+        // Extract the comma-separated fields from the textLine
         String[] fields = textLine.split(",");
         if (fields.length < 3) return null; // If the textLine is incomplete return null
         else {
@@ -53,17 +54,18 @@ public class Detection {
                 if (cars.indexOf(newCar) != -1) {
                     newCar = cars.get(cars.indexOf(newCar));
                 } else {
+                    // If the car isn't registered yet, the newCar with only the licensePlate will be added to the cars list
                     cars.add(newCar);
                 }
 
-                // parse the fields and instantiate a new Detection
+                // Parse the fields and instantiate a new Detection
                 newDetection = new Detection(
                         newCar,
                         fields[1].trim(),
                         LocalDateTime.parse(fields[2].trim())
                 );
             } catch (Exception e) {
-                // any of the parse and valueOf methods could throw an exception on a format mismatch
+                // Any of the parse and valueOf methods could throw an exception on a format mismatch
                 System.out.printf("Could not parse Detection specification in text line '%s'\n", textLine);
                 System.out.println(e.getMessage());
             }
@@ -88,12 +90,12 @@ public class Detection {
         // If a car drives on diesel, and it's a truck or coach with an emission
         // category of below 6, a new violation has to be returned
         if (fuelType.equals(FuelType.valueOf("Diesel"))) {
-            if ((cartype.equals(CarType.valueOf("Truck")) && emissionCategory < 6) ||
-                    (cartype.equals(CarType.valueOf("Coach")) && emissionCategory < 6)) {
+            if ((cartype.equals(CarType.valueOf("Truck")) && emissionCategory < maxEmission) ||
+                    (cartype.equals(CarType.valueOf("Coach")) && emissionCategory < maxEmission)) {
                 return new Violation(car, city);
             }
         }
-        return null;
+        return null; // If there was no violation
     }
 
     public Car getCar() {

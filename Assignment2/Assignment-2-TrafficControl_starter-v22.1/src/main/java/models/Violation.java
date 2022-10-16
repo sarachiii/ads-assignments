@@ -30,8 +30,9 @@ public class Violation {
      * nullifying identifying attributes car and/or city that do not match
      * identifying attributes that match are retained in the result.
      * This method can be used for aggregating violations applying different grouping criteria
+     *
      * @param other
-     * @return  a new violation with the accumulated offencesCount and matching identifying attributes.
+     * @return a new violation with the accumulated offencesCount and matching identifying attributes.
      */
     public Violation combineOffencesCounts(Violation other) {
         Violation combinedViolation = new Violation(

@@ -65,15 +65,17 @@ public class TrafficTracker {
     private int mergeDetectionsFromVaultRecursively(File file) {
 
         if (file.isDirectory()) {
-            // the file is a folder (a.k.a. directory)
-            //  retrieve a list of all files and sub folders in this directory
+            // retrieve a list of all files and sub folders in this directory
             File[] filesInDirectory = Objects.requireNonNullElse(file.listFiles(), new File[0]);
 
-            for (int i = 0; i < filesInDirectory.length; i++) {
-                if (filesInDirectory[i].isFile()) {
-                    totalNumberOfOffences += this.mergeDetectionsFromFile(filesInDirectory[i]);
-                } else if (filesInDirectory[i].isDirectory()) {
-                    mergeDetectionsFromVaultRecursively(filesInDirectory[i]);
+            // check if files in directory are directories or files
+            for (File value : filesInDirectory) {
+                // if it's a file, calculate all the offences found
+                if (value.isFile()) {
+                    totalNumberOfOffences += this.mergeDetectionsFromFile(value);
+                // if it's a directory, call the method on itself again
+                } else if (value.isDirectory()) {
+                    mergeDetectionsFromVaultRecursively(value);
                 }
             }
 
@@ -103,11 +105,12 @@ public class TrafficTracker {
 
         System.out.printf("Imported %d detections from %s.\n", newDetections.size(), file.getPath());
 
-        int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the dataS in this file
+        int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the data in this file
 
-        for (int i = 0; i < newDetections.size(); i++) {
-            if (newDetections.get(i).validatePurple() != null) {
-                Violation newDetection = newDetections.get(i).validatePurple();
+
+        for (Detection detection : newDetections) {
+            if (detection.validatePurple() != null) {
+                Violation newDetection = detection.validatePurple();
                 this.violations.merge(newDetection, Violation::combineOffencesCounts);
                 totalNumberOfOffences++;
             }
@@ -122,8 +125,8 @@ public class TrafficTracker {
      * @return the total amount of money recovered from all violations
      */
     public double calculateTotalFines() {
-        double truckOffense = 25.0;
-        double coachOffense = 35.0;
+        double truckFine = 25.0;
+        double coachFine = 35.0;
 
         // Returns the sum of all the offences fines based on if it's a truck or a coach
         return this.violations.aggregate(
@@ -132,8 +135,8 @@ public class TrafficTracker {
                     if (violation.getCar().getCarType() == Car.CarType.Truck) {
                         return truckFine * violation.getOffencesCount(); // returns the amount of offences times the fine for trucks
                     } else if (violation.getCar().getCarType() == Car.CarType.Coach) {
-                        return coachOffense * violation.getOffencesCount();
-                    } else return null;
+                        return coachFine * violation.getOffencesCount();  // returns the amount of offences times the fine for coaches
+                    } else return null; // If the violation car was not a truck or coach return nothing
                 }
         );
     }
@@ -180,8 +183,8 @@ public class TrafficTracker {
                     , topNumber, list.size());
             topNumber = list.size(); // Set the topNumber to the size of the list
         }
-        return list.subList(0,topNumber);
-}
+        return list.subList(0, topNumber); // Return the sublist which starts from the beginning of the list until the given topNumber
+    }
 
 
     /**
