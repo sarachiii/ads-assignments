@@ -48,8 +48,8 @@ public class Detection {
 
                 Car newCar = new Car(licensePlate);
 
-                // If car is matched with the licensePlate it will be the new car,
-                // otherwise the newCar with only the licensePlate will be added to the cars list
+                // If the car from the detection is registered in the cars list,
+                // the existing car will become the newCar
                 if (cars.indexOf(newCar) != -1) {
                     newCar = cars.get(cars.indexOf(newCar));
                 } else {

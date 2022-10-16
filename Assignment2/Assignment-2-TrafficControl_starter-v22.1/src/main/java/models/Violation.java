@@ -64,7 +64,10 @@ public class Violation {
 
     @Override
     public String toString() {
+        // Initialize the license plate and set to null, because not all Violations have a car(so no license plate)
         String licensePlate = null;
+
+        // Check if the Violation has a car and set the string to the car's license plate
         if (this.getCar() != null) {
             licensePlate = car.getLicensePlate();
         }

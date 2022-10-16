@@ -125,10 +125,12 @@ public class TrafficTracker {
         double truckOffense = 25.0;
         double coachOffense = 35.0;
 
+        // Returns the sum of all the offences fines based on if it's a truck or a coach
         return this.violations.aggregate(
                 violation -> {
+                    // Checks if the car in the violation is a truck or a coach
                     if (violation.getCar().getCarType() == Car.CarType.Truck) {
-                        return truckOffense * violation.getOffencesCount();
+                        return truckFine * violation.getOffencesCount(); // returns the amount of offences times the fine for trucks
                     } else if (violation.getCar().getCarType() == Car.CarType.Coach) {
                         return coachOffense * violation.getOffencesCount();
                     } else return null;
@@ -144,6 +146,7 @@ public class TrafficTracker {
      * @return a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCar(int topNumber) {
+        // Return the createMergeAndSortList method where the list of violations will be ordered by license plate
         return createMergeAndSortList(Violation::compareByLicensePlate, topNumber);
     }
 
@@ -155,21 +158,27 @@ public class TrafficTracker {
      * @return a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCity(int topNumber) {
+        // Return the createMergeAndSortList method where the list of violations will be ordered by city
         return createMergeAndSortList(Violation::compareByCity, topNumber);
     }
 
     private List<Violation> createMergeAndSortList(Comparator<Violation> comparator, int topNumber) {
+        // create a new orderedArrayList with the Violation comparator given from the main method;
         OrderedArrayList<Violation> list = new OrderedArrayList<>(comparator);
 
+        // Loop and merge all violations into the new list and combine the offences
         for (Violation violation : this.violations) {
             list.merge(violation, Violation::combineOffencesCounts);
         }
+
+        // Sort the list based on the amount of offences each violation has and reverse it so the highest amounts will be first
         list.sort(Comparator.comparing(Violation::getOffencesCount).reversed());
 
+        // Check if the topNumber doesn't exceed the length of the array otherwise the index will be out of bounds
         if (topNumber > list.size()) {
             System.out.printf("This array does not have %d violations the topNumber will be set to the list size :%d\n"
                     , topNumber, list.size());
-            topNumber = list.size();
+            topNumber = list.size(); // Set the topNumber to the size of the list
         }
         return list.subList(0,topNumber);
 }

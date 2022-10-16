@@ -103,26 +103,28 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
 
         if (start == this.size()) return -1;
 
-        while (start <= end) {
-            int midIndex = (start + end) / 2;
-            int compareResult = this.ordening.compare(searchItem,this.get(midIndex));
+        while (from <= to) { // Keep looping while the start index is equal or smaller than the last index of the sorted list
+            int midIndex = (from + to) / 2; // make the middle index by splitting the sorted list in half
+            int compareResult = this.ordening.compare(searchItem, this.get(midIndex)); // compare the search item with the existing item in the middle index
 
+            // The compare result checks if the item is found at the midIndex, before the midIndex or after the midIndex
             if (compareResult == 0) {
                 return midIndex;
             } else if (compareResult > 0) {
-                start = midIndex + 1;
+                from = midIndex + 1; // the new start index will be after the midIndex, cutting the list in half
             } else if (compareResult < 0) {
-                end = midIndex - 1;
+                to = midIndex - 1; // the new end index will be before the midIndex, cutting the list in half
             }
         }
 
+        // If the search item isn't found in the sorted part of the list the unsorted part will be looped through
         for (int i = nSorted; i < this.size(); i++) {
             if (this.ordening.compare(searchItem,this.get(i)) == 0) {
                 return i;
             }
         }
 
-        return -1;
+        return -1; // item wasn't found
     }
 
     /**
@@ -140,7 +142,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         int from = 0; // Start position
         int to = nSorted - 1; // The number of sorted items in the first section of the list
 
-        return indexOfByRecursiveBinarySearch(searchItem, from, to);
+        return indexOfByRecursiveBinarySearch(searchItem, from, to); // immediately return the same method where the from and to can be altered
     }
 
     public int indexOfByRecursiveBinarySearch(E searchItem,int from,int to){
@@ -154,7 +156,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
                 to = midIndex - 1;
                 return indexOfByRecursiveBinarySearch(searchItem,from,to);
             } else {
-                return midIndex;
+                return midIndex; // If it is found at the same index midIndex will be returned
             }
         } else {
             // If no match was found, a linear search has to be done in the unsorted section of the list
@@ -182,16 +184,17 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
      */
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {
-        if (newItem == null) return false;
-        int matchedItemIndex = this.indexOfByRecursiveBinarySearch(newItem);
+        if (newItem == null) return false; // if there is no new item it will return false
+        int matchedItemIndex = this.indexOfByRecursiveBinarySearch(newItem); // search for the index of the new item
 
+        // Matched item index returns -1 if the item doesn't exist yet, so it will be added as a new item to the list
         if (matchedItemIndex < 0) {
             this.add(newItem);
             return true;
         } else {
-            E matchedItem = this.get(matchedItemIndex);
-            E mergedItem = merger.apply(newItem, matchedItem);
-            this.set(matchedItemIndex,mergedItem);
+            E matchedItem = this.get(matchedItemIndex); // retrieve the item from the array on the matched item index
+            E mergedItem = merger.apply(newItem, matchedItem); // merge existing item with the new item
+            this.set(matchedItemIndex, mergedItem); // replace the item in the array with the new merged item
             return false;
         }
     }
