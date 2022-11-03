@@ -31,7 +31,7 @@ public class Song {
     // TODO add instance variable(s) to track the streams counts per country
     //  choose a data structure that you deem to be most appropriate for this application.
 
-    private static Map<Country,Integer> BY_STREAMS = new HashMap<>();
+    private Map<Country, Integer> BY_STREAMS = new HashMap<>();
 
     /**
      * Constructs a new instance of Song based on given attribute values
@@ -41,42 +41,35 @@ public class Song {
         this.title = title;
         this.language = language;
 
-        for (Country c : Country.values()){
-            BY_STREAMS.put(c,0);
+        for (Country c : Country.values()) {
+            BY_STREAMS.put(c, 0);
         }
 
     }
 
     /**
      * Sets the given streams count for the given country on this song
+     *
      * @param country
      * @param streamsCount
      */
     public void setStreamsCountOfCountry(Country country, int streamsCount) {
-        for (Country c : Country.values()) {
-            if (c.name().equals(country.name())){
-                BY_STREAMS.put(country,streamsCount);
-            }
-        }
+        BY_STREAMS.replace(country, streamsCount);
     }
 
     /**
      * retrieves the streams count of a given country from this song
+     *
      * @param country
      * @return
      */
     public int getStreamsCountOfCountry(Country country) {
-        for (Country c : Country.values()) {
-            if (c.name().equals(country.name())){
-                System.out.println(BY_STREAMS.get(country));
-                return BY_STREAMS.get(country);
-
-            }
-        }
-        return 0;
+        return BY_STREAMS.get(country);
     }
+
     /**
      * Calculates/retrieves the total of all streams counts across all countries from this song
+     *
      * @return
      */
     public int getStreamsCountTotal() {
@@ -93,37 +86,34 @@ public class Song {
     /**
      * compares this song with the other song
      * ordening songs with the highest total number of streams upfront
-     * @param other     the other song to compare against
-     * @return  negative number, zero or positive number according to Comparator convention
+     *
+     * @param other the other song to compare against
+     * @return negative number, zero or positive number according to Comparator convention
      */
     public int compareByHighestStreamsCountTotal(Song other) {
         int compareResult = 0;
 
-        if (this.getStreamsCountTotal() > other.getStreamsCountTotal()){
-            compareResult = -1;
-        } else if (this.getStreamsCountTotal() < other.getStreamsCountTotal()){
+        if (other.getStreamsCountTotal() > this.getStreamsCountTotal()) {
             compareResult = 1;
+        } else if (other.getStreamsCountTotal() < this.getStreamsCountTotal()) {
+            compareResult = -1;
         }
-
         return compareResult;    // replace by proper result
     }
 
     /**
      * compares this song with the other song
      * ordening all Dutch songs upfront and then by decreasing total number of streams
-     * @param other     the other song to compare against
-     * @return  negative number, zero or positive number according to Comparator conventions
+     *
+     * @param other the other song to compare against
+     * @return negative number, zero or positive number according to Comparator conventions
      */
     public int compareForDutchNationalChart(Song other) {
-        int compareResult = 0;
-
-        if (this.getStreamsCountOfCountry(Country.NL) > other.getStreamsCountOfCountry(Country.NL)){
-            compareResult = -1;
-        } else if (this.getStreamsCountOfCountry(Country.NL) < other.getStreamsCountOfCountry(Country.NL)){
-            compareResult = 1;
-        }
-
-        return compareResult;    // replace by proper result
+        if (other.language.compareTo(this.language) > 0){
+            return -1;
+        } else if (other.language.compareTo(this.language) < 0){
+            return 1;
+        } else return compareByHighestStreamsCountTotal(other);
     }
 
 
@@ -139,11 +129,8 @@ public class Song {
         return language;
     }
 
-    // TODO provide a toString implementation to format songs as in "artist/title{language}(total streamsCount)"
-
-
     @Override
     public String toString() {
-        return String.format("%s/%s {%s}(%d)",artist,title,language.name(),getStreamsCountTotal());
+        return String.format("%s/%s{%s}(%d)", artist, title, language.name(), getStreamsCountTotal());
     }
 }
