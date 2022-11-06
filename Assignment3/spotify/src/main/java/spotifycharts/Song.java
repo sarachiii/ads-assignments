@@ -28,9 +28,6 @@ public class Song {
     private final String title;
     private final Language language;
 
-    // TODO add instance variable(s) to track the streams counts per country
-    //  choose a data structure that you deem to be most appropriate for this application.
-
     private Map<Country, Integer> BY_STREAMS = new HashMap<>();
 
     /**

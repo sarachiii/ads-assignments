@@ -1,43 +1,75 @@
 package spotifycharts;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 public class SorterImpl<E> implements Sorter<E> {
 
     /**
-     * Sorts all items by selection or insertion sort using the provided comparator
-     * for deciding relative ordening of two items
+     * Sorts all items by insertion sort using the provided comparator
+     * for deciding relative ordening of two items.
      * Items are sorted 'in place' without use of an auxiliary list or array
+     *
      * @param items
      * @param comparator
-     * @return  the items sorted in place
+     * @return the items sorted in place
      */
     public List<E> selInsBubSort(List<E> items, Comparator<E> comparator) {
-        // TODO implement selection sort or insertion sort or bubble sort
-
-
-
-
-        return items;   // replace as you find appropriate
+        for (int i = 0; i < items.size(); i++) {
+            int j = i;
+            E temp = items.get(i);
+            while (j > 0 && comparator.compare(items.get(j - 1), temp) > 0) {
+                items.set(j, items.get(j - 1));
+                j = j - 1;
+            }
+            items.set(j, temp);
+        }
+        return items;
     }
 
     /**
      * Sorts all items by quick sort using the provided comparator
      * for deciding relative ordening of two items
      * Items are sorted 'in place' without use of an auxiliary list or array
+     *
      * @param items
      * @param comparator
-     * @return  the items sorted in place
+     * @return the items sorted in place
      */
     public List<E> quickSort(List<E> items, Comparator<E> comparator) {
-        // TODO provide a recursive quickSort implementation,
-        //  that is different from the example given in the lecture
+        quickSortPart(items, comparator, 0, items.size() - 1);
 
+        return items;
+    }
 
+    private void quickSortPart(List<E> items, Comparator<E> comparator, int from, int to) {
+        if (from >= to) return; // If the list is empty or has only one item, the list is already sorted
 
-        return items;   // replace as you find appropriate
+        int partitionIndex = partition(items, comparator, from, to);
+
+        quickSortPart(items, comparator, from, partitionIndex - 1);
+        quickSortPart(items, comparator, partitionIndex + 1, to);
+    }
+
+    private int partition(List<E> items, Comparator<E> comparator, int from, int to) {
+        int pivot = to;
+        int i = from - 1;
+
+        for (int j = from; j < to; j++) {
+            if (comparator.compare(items.get(j), items.get(pivot)) <= 0) {
+                i++;
+
+                E temp = items.get(i);
+                items.set(i, items.get(j));
+                items.set(j, temp);
+            }
+        }
+
+        E temp = items.get(i + 1);
+        items.set(i + 1, items.get(to));
+        items.set(to, temp);
+
+        return i + 1;
     }
 
     /**
@@ -46,11 +78,12 @@ public class SorterImpl<E> implements Sorter<E> {
      * with use of (zero-based) heapSwim and heapSink operations.
      * The remaining items are kept in the tail of the list, in arbitrary order.
      * Items are sorted 'in place' without use of an auxiliary list or array or other positions in items
-     * @param numTops       the size of the lead collection of items to be found and sorted
+     *
+     * @param numTops    the size of the lead collection of items to be found and sorted
      * @param items
      * @param comparator
-     * @return              the items list with its first numTops items sorted according to comparator
-     *                      all other items >= any item in the lead collection
+     * @return the items list with its first numTops items sorted according to comparator
+     * all other items >= any item in the lead collection
      */
     public List<E> topsHeapSort(int numTops, List<E> items, Comparator<E> comparator) {
 
@@ -86,7 +119,7 @@ public class SorterImpl<E> implements Sorter<E> {
         // the first numTops positions of the list now contain the lead collection
         // the reverseComparator heap condition applies to this lead collection
         // now use heapSort to realise full ordening of this collection
-        for (int i = numTops-1; i > 0; i--) {
+        for (int i = numTops - 1; i > 0; i--) {
             // loop-invariant: items[i+1..numTops-1] contains the tail part of the sorted lead collection
             // position 0 holds the root item of a heap of size i+1 organised by reverseComparator
             // this root item is the worst item of the remaining front part of the lead collection
@@ -95,10 +128,8 @@ public class SorterImpl<E> implements Sorter<E> {
             //  this moves item[0] to its designated position
 
 
-
             // TODO the new root may have violated the heap condition
             //  repair the heap condition on the remaining heap of size i
-
 
 
         }
@@ -110,8 +141,9 @@ public class SorterImpl<E> implements Sorter<E> {
      * Repairs the zero-based heap condition for items[heapSize-1] on the basis of the comparator
      * all items[0..heapSize-2] are assumed to satisfy the heap condition
      * The zero-bases heap condition says:
-     *                      all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
+     * all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
      * or equivalently:     all items[i] >= items[(i-1)/2]
+     *
      * @param items
      * @param heapSize
      * @param comparator
@@ -121,14 +153,15 @@ public class SorterImpl<E> implements Sorter<E> {
         //      i==0 || items[(i-1]/2] <= items[i]
 
 
-
     }
+
     /**
      * Repairs the zero-based heap condition for its root items[0] on the basis of the comparator
      * all items[1..heapSize-1] are assumed to satisfy the heap condition
      * The zero-bases heap condition says:
-     *                      all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
+     * all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
      * or equivalently:     all items[i] >= items[(i-1)/2]
+     *
      * @param items
      * @param heapSize
      * @param comparator
@@ -136,7 +169,6 @@ public class SorterImpl<E> implements Sorter<E> {
     protected void heapSink(List<E> items, int heapSize, Comparator<E> comparator) {
         // TODO sink items[0] down the heap until
         //      2*i+1>=heapSize || (items[i] <= items[2*i+1] && items[i] <= items[2*i+2])
-
 
 
     }
