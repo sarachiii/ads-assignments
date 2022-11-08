@@ -1,5 +1,6 @@
 package spotifycharts;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -59,15 +60,10 @@ public class SorterImpl<E> implements Sorter<E> {
             if (comparator.compare(items.get(j), items.get(pivot)) <= 0) {
                 i++;
 
-                E temp = items.get(i);
-                items.set(i, items.get(j));
-                items.set(j, temp);
+                Collections.swap(items,i,j);
             }
         }
-
-        E temp = items.get(i + 1);
-        items.set(i + 1, items.get(to));
-        items.set(to, temp);
+        Collections.swap(items,i+1,to);
 
         return i + 1;
     }
@@ -123,17 +119,18 @@ public class SorterImpl<E> implements Sorter<E> {
             // loop-invariant: items[i+1..numTops-1] contains the tail part of the sorted lead collection
             // position 0 holds the root item of a heap of size i+1 organised by reverseComparator
             // this root item is the worst item of the remaining front part of the lead collection
+            E item = items.get(i);
+            E worstItem = items.get(0);
 
-            // TODO swap item[0] and item[i];
-            //  this moves item[0] to its designated position
+            if (comparator.compare(worstItem, item) > 0) {
+                // item > worstLeadItem, so shall be included in the lead collection
 
+                Collections.swap(items,0,i);
 
-            // TODO the new root may have violated the heap condition
-            //  repair the heap condition on the remaining heap of size i
-
+                heapSink(items, i, reverseComparator);
+            }
 
         }
-
         return items;
     }
 
@@ -149,10 +146,18 @@ public class SorterImpl<E> implements Sorter<E> {
      * @param comparator
      */
     protected void heapSwim(List<E> items, int heapSize, Comparator<E> comparator) {
-        // TODO swim items[heapSize-1] up the heap until
-        //      i==0 || items[(i-1]/2] <= items[i]
+        int childIndex = heapSize - 1;
+        int parentIndex = childIndex / 2;
+        E swimmer = items.get(childIndex);
 
-
+        while (parentIndex >= 0 && comparator.compare(items.get(parentIndex), swimmer) > 0) {
+            // swap swimmer with parent
+            Collections.swap(items,childIndex,parentIndex);
+            // proceed with next level towards the root
+            childIndex = parentIndex;
+            parentIndex = childIndex/2;
+            swimmer = items.get(childIndex);
+        }
     }
 
     /**
@@ -167,9 +172,24 @@ public class SorterImpl<E> implements Sorter<E> {
      * @param comparator
      */
     protected void heapSink(List<E> items, int heapSize, Comparator<E> comparator) {
-        // TODO sink items[0] down the heap until
-        //      2*i+1>=heapSize || (items[i] <= items[2*i+1] && items[i] <= items[2*i+2])
+        int parentIndex = 0;
+        int childIndex = 1;
 
+        while (childIndex < heapSize){
+            E sinker = items.get(parentIndex);
+            E child = items.get(childIndex);
+            int compareResult = comparator.compare(child,items.get(childIndex+1));
 
+            if (childIndex + 1 < heapSize && compareResult > 0){
+                childIndex++;
+                child = items.get(childIndex);
+            }
+
+            if (comparator.compare(sinker,child) < 0) break;
+
+            Collections.swap(items,parentIndex,childIndex);
+            parentIndex = childIndex;
+            childIndex = 2 * parentIndex;
+        }
     }
 }
