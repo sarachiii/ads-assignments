@@ -60,10 +60,10 @@ public class SorterImpl<E> implements Sorter<E> {
             if (comparator.compare(items.get(j), items.get(pivot)) <= 0) {
                 i++;
 
-                Collections.swap(items,i,j);
+                Collections.swap(items, i, j);
             }
         }
-        Collections.swap(items,i+1,to);
+        Collections.swap(items, i + 1, to);
 
         return i + 1;
     }
@@ -125,7 +125,7 @@ public class SorterImpl<E> implements Sorter<E> {
             if (comparator.compare(worstItem, item) > 0) {
                 // item > worstLeadItem, so shall be included in the lead collection
 
-                Collections.swap(items,0,i);
+                Collections.swap(items, 0, i);
 
                 heapSink(items, i, reverseComparator);
             }
@@ -152,10 +152,10 @@ public class SorterImpl<E> implements Sorter<E> {
 
         while (parentIndex >= 0 && comparator.compare(items.get(parentIndex), swimmer) > 0) {
             // swap swimmer with parent
-            Collections.swap(items,childIndex,parentIndex);
+            Collections.swap(items, childIndex, parentIndex);
             // proceed with next level towards the root
             childIndex = parentIndex;
-            parentIndex = childIndex/2;
+            parentIndex = childIndex / 2;
             swimmer = items.get(childIndex);
         }
     }
@@ -175,19 +175,19 @@ public class SorterImpl<E> implements Sorter<E> {
         int parentIndex = 0;
         int childIndex = 1;
 
-        while (childIndex < heapSize){
+        while (childIndex < heapSize) {
             E sinker = items.get(parentIndex);
             E child = items.get(childIndex);
-            int compareResult = comparator.compare(child,items.get(childIndex+1));
+            int compareResult = comparator.compare(child, items.get(childIndex + 1));
 
-            if (childIndex + 1 < heapSize && compareResult > 0){
+            if (childIndex + 1 < heapSize && compareResult > 0) {
                 childIndex++;
                 child = items.get(childIndex);
             }
 
-            if (comparator.compare(sinker,child) < 0) break;
+            if (comparator.compare(sinker, child) < 0) break;
 
-            Collections.swap(items,parentIndex,childIndex);
+            Collections.swap(items, parentIndex, childIndex);
             parentIndex = childIndex;
             childIndex = 2 * parentIndex;
         }
