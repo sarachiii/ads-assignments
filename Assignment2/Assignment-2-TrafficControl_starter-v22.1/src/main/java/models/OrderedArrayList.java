@@ -41,6 +41,7 @@ public class OrderedArrayList<E> extends ArrayList<E> implements OrderedList<E> 
         this.nSorted = this.size();
     }
 
+
     @Override
     public void add(int index, E element) {
         if (index <= nSorted) this.nSorted = index;

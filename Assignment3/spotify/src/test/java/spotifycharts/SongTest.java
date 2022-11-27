@@ -105,6 +105,7 @@ public class SongTest {
     }
     private void checkRankingScheme(String schemeName, Comparator<Song> rankingScheme,
                                    int bycVSkka, int bycVSts, int kkaVSts, int kkaVSjvt, int bbVSbyc) {
+
         assertEquals(bycVSkka, sign(rankingScheme.compare(songBYC, songKKA)),
                 String.format("'%s'-comparator does not properly compare '%s' with '%s'", schemeName, songBYC, songKKA));
         assertEquals(bycVSts, sign(rankingScheme.compare(songBYC, songTS)),

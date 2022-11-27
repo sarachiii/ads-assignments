@@ -170,6 +170,7 @@ public class CarsListTest {
     public void insertSustainsRepresentationInvariant() {
         cars.sort();
         cars.add(cars.size()-1, volvo2);
+        System.out.println(cars.indexOf(cars.get(cars.size()-2)));
         assertEquals(cars.size()-2, cars.indexOf(volvo2),
                 "add(index, item) shall insert the item at the specified index");
         assertNotEquals(cars.size(), cars.nSorted,
@@ -242,7 +243,7 @@ public class CarsListTest {
                 index = i;
             }
 
-            assertEquals(index, i,
+            assertEquals(i, index,
                     String.format("Existing item[%d]='%s' was not found at its position, but returned index=%d. (nSorted=%d)",
                             i, item, index, nSorted));
         }
@@ -258,4 +259,5 @@ public class CarsListTest {
                     orderedArrayList.getOrdening().compare(orderedArrayList.get(i), orderedArrayList.get(i+1)), lessThanOrEqualTo(0));
         }
     }
+
 }

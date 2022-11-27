@@ -57,7 +57,7 @@ public class TrafficTrackerTest2 {
     @Test
     public void topViolationsByCar() {
         List<Violation> topViolationsByCar = trafficTracker.topViolationsByCar(4);
-
+        System.out.println(topViolationsByCar);
         assertTrue(topViolationsByCar.get(0).getOffencesCount() >= topViolationsByCar.get(1).getOffencesCount());
         assertTrue(topViolationsByCar.get(1).getOffencesCount() >= topViolationsByCar.get(2).getOffencesCount());
         assertTrue(topViolationsByCar.get(2).getOffencesCount() >= topViolationsByCar.get(3).getOffencesCount());
