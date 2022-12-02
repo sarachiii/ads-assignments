@@ -38,7 +38,6 @@ public class PollingStation {
      * @param numberOfVotes
      */
     public void addVotes(Candidate candidate, int numberOfVotes) {
-
         this.votesByCandidate.merge(candidate,numberOfVotes,Integer::sum);
     }
 
