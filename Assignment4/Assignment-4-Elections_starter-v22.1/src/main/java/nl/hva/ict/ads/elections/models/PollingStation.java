@@ -38,12 +38,8 @@ public class PollingStation {
      * @param numberOfVotes
      */
     public void addVotes(Candidate candidate, int numberOfVotes) {
-        // TODO add the number of votes for the candidate
-        //   hint: the best quality solution used one line of code...
-        
-        System.out.println(numberOfVotes);
-        this.votesByCandidate.put(candidate, numberOfVotes);
-//        this.votesByCandidate.values().stream().mapToInt(Candidate::numberOfVotes).sum();
+
+        this.votesByCandidate.merge(candidate,numberOfVotes,Integer::sum);
     }
 
     public int getVotes(Candidate candidate) {
