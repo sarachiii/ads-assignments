@@ -51,14 +51,13 @@ public class PollingStation {
      */
     public Map<Party, Integer> getVotesByParty() {
 
+
+
         Map<Party, Integer> votes = new HashMap<>();
 
-        for (Integer value : votesByCandidate.values()){
-            System.out.println(value);
+        for (Candidate c : votesByCandidate.keySet()){
+            votes.merge(c.getParty(),votesByCandidate.get(c),Integer::sum);
         }
-
-        // TODO accumulate the votes per candidate into a map of total vote counts by party
-
 
         return votes;
     }
