@@ -51,8 +51,6 @@ public class PollingStation {
      */
     public Map<Party, Integer> getVotesByParty() {
 
-
-
         Map<Party, Integer> votes = new HashMap<>();
 
         for (Candidate c : votesByCandidate.keySet()){
