@@ -52,26 +52,16 @@ public class Constituency {
      * @return whether the registration has succeeded
      */
     public boolean register(int rank, Candidate candidate) {
-        // TODO  register the candidate in this constituency for his/her party at the given rank (ballot position)
-        //  hint: try to use computeIfAbsent to efficiently create and insert an empty ballot map into rankedCandidatesByParty only when required
-        System.out.println(rankedCandidatesByParty);
-        System.out.println(candidate);
-//        System.out.println(rankedCandidatesByParty.containsKey(candidate)+ "  candidate?");
-//        System.out.println(rankedCandidatesByParty.get(candidate));
-//        System.out.println(rankedCandidatesByParty.containsValue(rank) + "  rank?");
-//        System.out.println(rankedCandidatesByParty.get(rank));
-        if (rankedCandidatesByParty.containsValue(candidate)){
-            return false;
-        } else if (rankedCandidatesByParty.containsValue(rank)){
-            return false;
-        } else {
-            NavigableMap<Integer, Candidate> rankingCandidate = new TreeMap<>();
-            rankingCandidate.put(rank, candidate);
-            rankingCandidate.computeIfAbsent(rank, key -> null);
-            rankedCandidatesByParty.put(candidate.getParty(), rankingCandidate);
 
-            return true;
+        NavigableMap<Integer, Candidate> rankedCandidates =  rankedCandidatesByParty.computeIfAbsent(candidate.getParty(), key -> new TreeMap<>());
+
+        if (rankedCandidates.containsKey(rank) || rankedCandidates.containsValue(candidate)) {
+            return false;
         }
+        rankedCandidates.put(rank, candidate);
+        rankedCandidatesByParty.put(candidate.getParty(), rankedCandidates);
+
+        return true;
     }
 
     /**
@@ -91,16 +81,7 @@ public class Constituency {
      * @return
      */
     public Candidate getCandidate(Party party, int rank) {
-        // TODO: return the candidate at the given rank in the given party
-        Candidate candidate = rankedCandidatesByParty.get(party).get(rank);
-        System.out.println(rankedCandidatesByParty.get(party).get(rank));
-//        Map<Integer, Candidate> candidateMap = rankedCandidatesByParty.get(party);
-//        System.out.println(candidateMap.get(rank));
-//        System.out.println(candidateMap.get(rank).getClass());
-//        Map parties = rankedCandidatesByParty.get(party);
-//        System.out.println(parties);
-//        System.out.println((Candidate) parties.get(rank));
-        return candidate;
+        return rankedCandidatesByParty.get(party).get(rank);
     }
 
     /**
@@ -110,12 +91,7 @@ public class Constituency {
      * @return
      */
     public final List<Candidate> getCandidates(Party party) {
-        // TODO: return a list with all registered candidates of a given party in order of their rank
-        //  hint: if the implementation classes of rankedCandidatesByParty are well chosen, this only takes one line of code
-        //  hint: the resulting list may be immutable at your choice of implementation.
-
-
-        return null; // replace by a proper outcome
+        return rankedCandidatesByParty.get(party).values().stream().toList();
     }
 
     /**
@@ -125,11 +101,7 @@ public class Constituency {
      * @return the set of all candidates in this Constituency.
      */
     public Set<Candidate> getAllCandidates() {
-        // TODO collect all candidates of all parties of this Constituency into a Set.
-        //  hint: flatMap may help...
-
-
-        return null;    // replace by a proper outcome
+        return  rankedCandidatesByParty.values().stream().flatMap(ballot -> ballot.values().stream()).collect(Collectors.toSet());
     }
 
     /**
