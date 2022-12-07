@@ -37,11 +37,8 @@ public class Constituency {
     public Constituency(int id, String name) {
         this.id = id;
         this.name = name;
-
-        // TODO initialise this.rankedCandidatesByParty with an appropriate Map implementation
-        //  and this.pollingStations with an appropriate Set implementation organised by zipCode and Id
-
-
+        this.rankedCandidatesByParty = new HashMap<>();
+        this.pollingStations = new TreeSet<>(Comparator.comparing(PollingStation::getZipCode));
     }
 
     /**
@@ -56,8 +53,21 @@ public class Constituency {
     public boolean register(int rank, Candidate candidate) {
         // TODO  register the candidate in this constituency for his/her party at the given rank (ballot position)
         //  hint: try to use computeIfAbsent to efficiently create and insert an empty ballot map into rankedCandidatesByParty only when required
-
-
+        System.out.println(rankedCandidatesByParty);
+        System.out.println(candidate);
+//        System.out.println(rankedCandidatesByParty.containsKey(candidate)+ "  candidate?");
+//        System.out.println(rankedCandidatesByParty.get(candidate));
+//        System.out.println(rankedCandidatesByParty.containsValue(rank) + "  rank?");
+//        System.out.println(rankedCandidatesByParty.get(rank));
+        if (rankedCandidatesByParty.containsValue(candidate)){
+            return false;
+        } else if (rankedCandidatesByParty.containsValue(rank)){
+            return false;
+        } else {
+            NavigableMap<Integer, Candidate> rankingCandidate = new TreeMap<>();
+            rankingCandidate.put(rank, candidate);
+            rankingCandidate.computeIfAbsent(rank, key -> null);
+            rankedCandidatesByParty.put(candidate.getParty(), rankingCandidate);
 
         return false;    // replace by a proper outcome
     }
@@ -83,9 +93,15 @@ public class Constituency {
      */
     public Candidate getCandidate(Party party, int rank) {
         // TODO: return the candidate at the given rank in the given party
-
-
-        return null;    // replace by a proper outcome
+        Candidate candidate = rankedCandidatesByParty.get(party).get(rank);
+        System.out.println(rankedCandidatesByParty.get(party).get(rank));
+//        Map<Integer, Candidate> candidateMap = rankedCandidatesByParty.get(party);
+//        System.out.println(candidateMap.get(rank));
+//        System.out.println(candidateMap.get(rank).getClass());
+//        Map parties = rankedCandidatesByParty.get(party);
+//        System.out.println(parties);
+//        System.out.println((Candidate) parties.get(rank));
+        return candidate;
     }
 
     /**
