@@ -101,7 +101,7 @@ public class Constituency {
      * @return the set of all candidates in this Constituency.
      */
     public Set<Candidate> getAllCandidates() {
-        return  rankedCandidatesByParty.values().stream().flatMap(ballot -> ballot.values().stream()).collect(Collectors.toSet());
+        return rankedCandidatesByParty.values().stream().flatMap(ballot -> ballot.values().stream()).collect(Collectors.toSet());
     }
 
     /**
@@ -128,10 +128,16 @@ public class Constituency {
      * @return
      */
     public Map<Party, Integer> getVotesByParty() {
-        // TODO prepare a map of total number of votes per party
 
+        Map<Party, Integer> votes = new HashMap<>();
 
-        return null; // replace by a proper outcome
+        for (PollingStation po : this.pollingStations){
+            for (Party pa : po.getVotesByParty().keySet()){
+                votes.merge(pa,po.getVotesByParty().get(pa),Integer::sum);
+            }
+        }
+
+        return votes;// return amount of votes
     }
 
     /**
@@ -147,7 +153,7 @@ public class Constituency {
             // and merge the votes of the duplicate into the existing original
             pollingStation.combineVotesWith(existing);
         }
-        ;
+
         return true;
     }
 
