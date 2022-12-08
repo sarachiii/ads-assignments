@@ -130,9 +130,12 @@ public class Election {
      */
     public Collection<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
         // TODO retrieve all polling stations within the area of the given range of zip codes (inclusively)
+        Set<PollingStation> pollingStations = new TreeSet<>(Comparator.comparing(PollingStation::getZipCode));
+        for (Constituency c : this.constituencies){
+            pollingStations = c.getPollingStationsByZipCodeRange(firstZipCode,lastZipCode);
+        }
 
-
-        return null; // replace by a proper outcome
+        return pollingStations; // replace by a proper outcome
     }
 
     /**
@@ -142,8 +145,15 @@ public class Election {
     public Map<Party, Integer> getVotesByParty() {
         // TODO calculate the total number of votes per party
 
+        Map<Party, Integer> votes = new HashMap<>();
 
-        return null; // replace by a proper outcome
+        for (Constituency c : this.constituencies){
+            for (Party party : c.getVotesByParty().keySet()){
+                votes.merge(party,c.getVotesByParty().get(party),Integer::sum);
+            }
+        }
+
+        return votes; // return map of votes
     }
 
     /**
@@ -157,8 +167,23 @@ public class Election {
     public Map<Party, Integer> getVotesByPartyAcrossPollingStations(Collection<PollingStation> pollingStations) {
         // TODO calculate the total number of votes per party across the given polling stations
 
+        Map<Party, Integer> votes = new HashMap<>();
 
-        return null; // replace by a proper outcome
+        if (pollingStations == null){ return null;}
+
+        for (Constituency c : this.constituencies){
+            for (PollingStation existingP: c.getPollingStations()){
+                for (PollingStation requiredP: pollingStations){
+                    if (existingP.equals(requiredP)){
+                        for (Party party: existingP.getVotesByParty().keySet()){
+                            votes.merge(party,existingP.getVotesByParty().get(party),Integer::sum);
+                        }
+                    }
+                }
+            }
+        }
+
+        return votes; // replace by a proper outcome
     }
 
 
