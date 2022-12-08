@@ -28,11 +28,8 @@ public class Election {
 
     public Election(String name) {
         this.name = name;
-
-        // TODO initialise this.parties and this.constituencies with an appropriate Map implementations
-
-
-
+        this.parties = new TreeMap<>(Integer::compareTo);
+        this.constituencies = new TreeSet<>(Comparator.comparing(Constituency::getId));
     }
 
     /**
@@ -44,7 +41,7 @@ public class Election {
         //  hint: there is no need to build a new collection; just return what you have got...
 
 
-        return null; // replace by a proper outcome
+        return this.parties.values().stream().toList(); // replace by a proper outcome
     }
 
     /**
@@ -53,10 +50,7 @@ public class Election {
      * @return  the party with given Id, or null if no such party exists.
      */
     public Party getParty(int Id) {
-        // TODO find the party with the given Id
-
-
-        return null; // replace by a proper outcome
+        return this.parties.get(Id); // replace by a proper outcome
     }
 
     public Set<? extends Constituency> getConstituencies() {
@@ -70,9 +64,14 @@ public class Election {
      */
     public List<Candidate> getAllCandidates() {
         // TODO find all candidates organised by increasing party-id
+        List<Party> parties = this.parties.values().stream().toList();
+        Set<Candidate> candidates = new HashSet<>();
 
+        for (Party p : parties){
+            candidates.addAll(p.getCandidates());
+        }
 
-        return null; // replace by a proper outcome
+        return candidates.stream().toList(); // replace by a proper outcome
     }
 
     /**
@@ -82,9 +81,13 @@ public class Election {
      */
     public Map<Constituency,Integer> numberOfRegistrationsByConstituency(Party party) {
         // TODO build a map with the number of candidate registrations per constituency
+        Map<Constituency,Integer> registrations = new TreeMap<>(Comparator.comparing(Constituency::getId));
 
+        for (Constituency c : this.constituencies){
+            registrations.merge(c,c.getCandidates(party).size(),Integer::sum);
+        }
 
-        return null; // replace by a proper outcome
+        return registrations; // replace by a proper outcome
     }
 
     /**
@@ -96,9 +99,25 @@ public class Election {
         // TODO build the collection of candidates with duplicate names across parties
         //   Hint: There are multiple approaches possible,
         //   if you cannot think of one, read the hints at the bottom of this file.
+        Set<Candidate> dupeCandidates = new HashSet<>();
+        List<Candidate> candidates = new ArrayList<>();
+        List<Party> parties = this.parties.values().stream().toList();
 
+        for (Party p : parties){
+            for (Candidate c : p.getCandidates()){
+                candidates.add(c);
+            }
+        }
 
-        return null; // replace by a proper outcome
+        for (int i = 0; i < candidates.size(); i++) {
+            for (int j = i + 1 ; j < candidates.size(); j++) {
+                if (candidates.get(i).getFullName().equals(candidates.get(j).getFullName())) {
+                    dupeCandidates.add(candidates.get(i));
+                    dupeCandidates.add(candidates.get(j));
+                }
+            }
+        }
+        return dupeCandidates; // replace by a proper outcome
     }
 
     /**

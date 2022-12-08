@@ -118,7 +118,7 @@ public class Constituency {
         //  hint: there is no need to build a new collection; just return what you have got...
 
 
-        return null; // replace by a proper outcome
+        return this.pollingStations; // replace by a proper outcome
     }
 
     /**
@@ -131,13 +131,13 @@ public class Constituency {
 
         Map<Party, Integer> votes = new HashMap<>();
 
-        for (PollingStation po : this.pollingStations){
-            for (Party pa : po.getVotesByParty().keySet()){
-                votes.merge(pa,po.getVotesByParty().get(pa),Integer::sum);
+        for (PollingStation pollingStation : this.pollingStations){
+            for (Party party : pollingStation.getVotesByParty().keySet()){
+                votes.merge(party,pollingStation.getVotesByParty().get(party),Integer::sum);
             }
         }
 
-        return votes;// return amount of votes
+        return votes; // return map of votes
     }
 
     /**
