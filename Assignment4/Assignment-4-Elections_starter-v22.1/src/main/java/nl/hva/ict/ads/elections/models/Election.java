@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 /**
  * Holds all election data per consituency
@@ -35,6 +36,7 @@ public class Election {
 
     /**
      * finds all (unique) parties registered for this election
+     *
      * @return all parties participating in at least one constituency, without duplicates
      */
     public Collection<Party> getParties() {
@@ -43,8 +45,9 @@ public class Election {
 
     /**
      * finds the party with a given Id
+     *
      * @param Id
-     * @return  the party with given Id, or null if no such party exists.
+     * @return the party with given Id, or null if no such party exists.
      */
     public Party getParty(int Id) {
         return this.parties.get(Id); // replace by a proper outcome
@@ -57,30 +60,23 @@ public class Election {
     /**
      * finds all unique candidates across all parties across all constituencies
      * organised by increasing party-id and then by increasing candidate id.
+     *
      * @return alle unique candidates organised in an ordered set.
      */
     public List<Candidate> getAllCandidates() {
-        List<Party> parties = this.parties.values().stream().toList();
-        Set<Candidate> candidates = new HashSet<>();
-
-        for (Party p : parties){
-            candidates.addAll(p.getCandidates());
-        }
-
-        return candidates.stream().toList(); // replace by a proper outcome
+        return this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).toList();// replace by a proper outcome
     }
 
     /**
      * Retrieve for the given party the number of Candidates that have been registered per Constituency
+     *
      * @param party
      * @return
      */
-    public Map<Constituency,Integer> numberOfRegistrationsByConstituency(Party party) {
-        Map<Constituency,Integer> registrations = new TreeMap<>(Comparator.comparing(Constituency::getId));
+    public Map<Constituency, Integer> numberOfRegistrationsByConstituency(Party party) {
 
-        for (Constituency c : this.constituencies){
-            registrations.merge(c,c.getCandidates(party).size(),Integer::sum);
-        }
+        Map<Constituency, Integer> registrations = this.constituencies.stream().collect(Collectors.toMap(constituency -> constituency,
+                constituency -> constituency.getCandidates(party).size(), Integer::sum));
 
         return registrations; // replace by a proper outcome
     }
@@ -88,47 +84,32 @@ public class Election {
     /**
      * Finds all Candidates that have a duplicate name against another candidate in the election
      * (can be in the same party or in another party)
+     *
      * @return
      */
     public Set<Candidate> getCandidatesWithDuplicateNames() {
-        Set<Candidate> dupeCandidates = new HashSet<>();
-        List<Candidate> candidates = new ArrayList<>();
-        List<Party> parties = this.parties.values().stream().toList();
+        List<Candidate> candidates = this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).toList();
+        List<String> candidateNames = new ArrayList<>();
 
-        for (Party p : parties){
-            for (Candidate c : p.getCandidates()){
-                candidates.add(c);
-            }
+        for (Candidate c : candidates) {
+            candidateNames.add(c.getFullName());
         }
 
-        for (int i = 0; i < candidates.size(); i++) {
-            for (int j = i + 1 ; j < candidates.size(); j++) {
-                if (candidates.get(i).getFullName().equals(candidates.get(j).getFullName())) {
-                    dupeCandidates.add(candidates.get(i));
-                    dupeCandidates.add(candidates.get(j));
-                }
-            }
-        }
-        return dupeCandidates; // replace by a proper outcome
+        return this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).filter(candidate ->
+                Collections.frequency(candidateNames, candidate.getFullName()) > 1).collect(Collectors.toSet()); // replace by a proper outcome
     }
 
     /**
      * Retrieve from all constituencies the combined sub set of all polling stations that are located within the area of the specified zip codes
      * i.e. firstZipCode <= pollingStation.zipCode <= lastZipCode
      * All valid zip codes adhere to the pattern 'nnnnXX' with 1000 <= nnnn <= 9999 and 'AA' <= XX <= 'ZZ'
+     *
      * @param firstZipCode
      * @param lastZipCode
-     * @return      the sub set of polling stations within the specified zipCode range
+     * @return the sub set of polling stations within the specified zipCode range
      */
     public Collection<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
-        NavigableSet<PollingStation> pollingStations = new TreeSet<>(Comparator.comparing(PollingStation::getZipCode));
-        for (Constituency c : this.constituencies){
-            for (PollingStation p : c.getPollingStationsByZipCodeRange(firstZipCode,lastZipCode)){
-                pollingStations.add(p);
-            }
-        }
-
-        return pollingStations; // replace by a proper outcome
+        return this.constituencies.stream().flatMap(constituency -> constituency.getPollingStationsByZipCodeRange(firstZipCode, lastZipCode).stream()).collect(Collectors.toSet());
     }
 
     /**
@@ -173,11 +154,9 @@ public class Election {
                 }
             }
         }
-        System.out.println(votes);
 
         return votes; // replace by a proper outcome
     }
-
 
     /**
      * Transforms and sorts decreasingly vote counts by party into votes percentages by party
@@ -186,15 +165,25 @@ public class Election {
      * @return  the sorted list of (party,votesPercentage) pairs with the highest percentage upfront
      */
     public static List<Map.Entry<Party,Double>> sortedElectionResultsByPartyPercentage(int tops, Map<Party, Integer> votesCounts) {
-        // TODO transform the voteCounts input into a sorted list of entries holding votes percentage by party
+
         int totalVotes = votesCounts.values().stream().mapToInt(Integer::intValue).sum();
-        Map<Party,Double> percentagesByParty = new TreeMap<>(Comparator.comparing());
+        Map<Party,Double> percentagesByParty = new HashMap<>();
 
         for (Party p : votesCounts.keySet()){
-            percentagesByParty.put(p,Double.valueOf(votesCounts.get(p)/totalVotes*100));
+            System.out.println(votesCounts.get(p));
+
+            percentagesByParty.put(p,( Double.valueOf(votesCounts.get(p))/totalVotes*100));
         }
 
-        List<Map.Entry<Party,Double>> percentages = percentagesByParty.entrySet().stream().toList();
+        List<Map.Entry<Party,Double>> percentages = new ArrayList<>(percentagesByParty.entrySet().stream().toList());
+
+        percentages.sort((o1, o2) -> {
+            if (o1.getValue() > o2.getValue()) return 1;
+            if (o1.getValue() < o2.getValue()) return -1;
+            return 0;
+        });
+
+        Collections.reverse(percentages);
 
         return percentages.subList(0,tops); // replace by a proper outcome
     }
