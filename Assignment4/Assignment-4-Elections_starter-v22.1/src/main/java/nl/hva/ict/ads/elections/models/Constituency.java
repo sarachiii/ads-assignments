@@ -114,11 +114,10 @@ public class Constituency {
      * @return the sub set of polling stations within the specified zipCode range
      */
     public NavigableSet<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
-        // TODO: return all polling stations that have been registered at this constituency
-        //  hint: there is no need to build a new collection; just return what you have got...
 
-
-        return this.pollingStations; // replace by a proper outcome
+        return this.pollingStations.stream().filter(pollingStation -> pollingStation.getZipCode().compareTo(firstZipCode)
+                >= 1 && pollingStation.getZipCode().compareTo(lastZipCode) <= 1 ).collect(Collectors.toCollection(() ->
+                new TreeSet<>(Comparator.comparing(PollingStation::getZipCode)))); // return set of polling stations
     }
 
     /**
