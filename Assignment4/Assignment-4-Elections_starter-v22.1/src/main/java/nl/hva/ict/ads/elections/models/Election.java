@@ -4,14 +4,13 @@ import nl.hva.ict.ads.utils.PathUtils;
 import nl.hva.ict.ads.utils.xml.XMLParser;
 
 import javax.xml.stream.XMLStreamException;
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 /**
  * Holds all election data per consituency
@@ -148,7 +147,7 @@ public class Election {
      */
     public static List<Map.Entry<Party, Double>> sortedElectionResultsByPartyPercentage(int tops, Map<Party, Integer> votesCounts) {
 
-        int totalVotes = votesCounts.values().stream().mapToInt(Integer::intValue).sum();
+        int totalVotes = integersSum(votesCounts.values());
         Map<Party, Double> percentagesByParty = new HashMap<>();
 
         for (Party p : votesCounts.keySet()) {
@@ -180,15 +179,18 @@ public class Election {
      * @return the most representative polling station.
      */
     public PollingStation findMostRepresentativePollingStation() {
+        Map<Party,Integer> totalVotesByParty = this.getVotesByParty();
+        Set<PollingStation> pollingStations = this.constituencies.stream().flatMap(constituency ->
+                constituency.getPollingStations().stream()).collect(Collectors.toSet());
+        Map<Party, Integer> votesByPartyByStation = pollingStations.stream().flatMap(pollingStation ->
+                pollingStation.getVotesByParty().entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,Integer::sum));
+        Map<PollingStation,Double> deviations = new HashMap<>();
 
-        // TODO: calculate the overall total votes count distribution by Party
-        //  and find the PollingStation with the lowest relative deviation between
-        //  its votes count distribution and the overall distribution.
-        //   hint: reuse euclidianVotesDistributionDeviation to calculate a difference metric between two vote counts
-        //   hint: use the .min reducer on a stream of polling stations with a suitable comparator
+        for (PollingStation p : pollingStations){
+            deviations.put(p,this.euclidianVotesDistributionDeviation(totalVotesByParty,votesByPartyByStation));
+        }
 
-
-        return null; // replace by a proper outcome
+        return Collections.max(deviations.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();// replace by a proper outcome
     }
 
     /**
