@@ -131,6 +131,9 @@ public class Election {
      * @return
      */
     public Map<Party, Integer> getVotesByPartyAcrossPollingStations(Collection<PollingStation> pollingStations) {
+
+        if (pollingStations == null) return null;
+
         return this.constituencies.stream().flatMap(constituency -> constituency.getPollingStations().stream()
                         .filter(pollingStation -> Collections.frequency(pollingStations.stream().toList(), pollingStation) > 0))
                 .collect(Collectors.toSet()).stream().flatMap(pollingStation -> pollingStation.getVotesByParty().entrySet()
