@@ -12,6 +12,7 @@ Thumbs.db
 **/out/
 **/dist/
 *.lock
+**/data-files/
 
 # IDE - VSCode
 **/.vscode/

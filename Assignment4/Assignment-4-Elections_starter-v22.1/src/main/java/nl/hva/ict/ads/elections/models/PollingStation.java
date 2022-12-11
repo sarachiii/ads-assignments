@@ -50,14 +50,7 @@ public class PollingStation {
      * @return the total number of votes in this polling station per party.
      */
     public Map<Party, Integer> getVotesByParty() {
-
-        Map<Party, Integer> votes = new HashMap<>();
-
-        for (Candidate c : votesByCandidate.keySet()){
-            votes.merge(c.getParty(),votesByCandidate.get(c),Integer::sum);
-        }
-
-        return votes;
+        return this.votesByCandidate.keySet().stream().collect(Collectors.toMap(candidate -> candidate.getParty(),candidate -> votesByCandidate.get(candidate),Integer::sum));
     }
 
     /**
@@ -68,7 +61,6 @@ public class PollingStation {
     public void combineVotesWith(PollingStation target) {
         // merge the votes of this polling station into the target
         this.getVotesByCandidate().entrySet().forEach(e -> target.addVotes(e.getKey(),e.getValue()));
-        System.out.printf("\nHave combined votes of %s into %s ", this, target);
         this.getVotesByCandidate().clear();
     }
 
