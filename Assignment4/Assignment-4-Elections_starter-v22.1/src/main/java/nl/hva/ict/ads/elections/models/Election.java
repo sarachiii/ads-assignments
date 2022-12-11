@@ -87,10 +87,10 @@ public class Election {
      * @return
      */
     public Set<Candidate> getCandidatesWithDuplicateNames() {
-        List<String> fullnames = this.parties.values().stream().flatMap(party -> party.getCandidates().stream().map(candidate -> candidate.getFullName())).toList();
+        List<String> fullNames = this.parties.values().stream().flatMap(party -> party.getCandidates().stream().map(Candidate::getFullName)).toList();
 
         return this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).filter(candidate ->
-                Collections.frequency(fullnames, candidate.getFullName()) > 1).collect(Collectors.toSet());
+                Collections.frequency(fullNames, candidate.getFullName()) > 1).collect(Collectors.toSet());
     }
 
     /**
@@ -186,7 +186,7 @@ public class Election {
         }
 
 
-        return Collections.max(deviations.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();// replace by a proper outcome
+        return Collections.max(deviations.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();
     }
 
     /**
