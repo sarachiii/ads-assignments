@@ -96,7 +96,7 @@ public class Election {
         }
 
         return this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).filter(candidate ->
-                Collections.frequency(candidateNames, candidate.getFullName()) > 1).collect(Collectors.toSet()); // replace by a proper outcome
+                Collections.frequency(candidateNames, candidate.getFullName()) > 1).collect(Collectors.toSet());
     }
 
     /**
@@ -117,16 +117,8 @@ public class Election {
      * @return
      */
     public Map<Party, Integer> getVotesByParty() {
-
-        Map<Party, Integer> votes = new HashMap<>();
-
-        for (Constituency c : this.constituencies){
-            for (Party party : c.getVotesByParty().keySet()){
-                votes.merge(party,c.getVotesByParty().get(party),Integer::sum);
-            }
-        }
-
-        return votes; // return map of votes
+        return this.constituencies.stream().flatMap(constituency -> constituency.getVotesByParty()
+                .entrySet().stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(),partyIntegerEntry -> partyIntegerEntry.getValue()));
     }
 
     /**
@@ -143,6 +135,8 @@ public class Election {
 
         if (pollingStations == null){ return null;}
 
+//        System.out.println(this.constituencies.stream().flatMap(constituency -> constituency.getPollingStations().stream()
+//                .filter(pollingStation -> Collections.frequency(pollingStations,pollingStation) > 1).collect(Collectors.toSet())));
         for (Constituency c : this.constituencies){
             for (PollingStation existingP: c.getPollingStations()){
                 for (PollingStation requiredP: pollingStations){
@@ -176,14 +170,12 @@ public class Election {
         List<Map.Entry<Party,Double>> percentages = new ArrayList<>(percentagesByParty.entrySet().stream().toList());
 
         percentages.sort((o1, o2) -> {
-            if (o1.getValue() > o2.getValue()) return 1;
-            if (o1.getValue() < o2.getValue()) return -1;
+            if (o1.getValue() > o2.getValue()) return -1;
+            if (o1.getValue() < o2.getValue()) return 1;
             return 0;
         });
 
-        Collections.reverse(percentages);
-
-        return percentages.subList(0,tops);
+        return percentages.subList(0,tops); // replace by a proper outcome
     }
 
     /**
