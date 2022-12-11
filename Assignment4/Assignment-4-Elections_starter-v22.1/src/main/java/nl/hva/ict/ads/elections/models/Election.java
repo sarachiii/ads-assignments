@@ -148,9 +148,9 @@ public class Election {
     public static List<Map.Entry<Party, Double>> sortedElectionResultsByPartyPercentage(int tops, Map<Party, Integer> votesCounts) {
 
         int totalVotes = integersSum(votesCounts.values());
-        Map<Party, Double> percentagesByParty = votesCounts.keySet().stream().collect(Collectors.toMap(party -> party,
-                party -> (Double.valueOf(votesCounts.get(party))/totalVotes*100)));
-        List<Map.Entry<Party, Double>> percentages = new ArrayList<>(percentagesByParty.entrySet().stream().toList());
+
+        List<Map.Entry<Party, Double>> percentages = new ArrayList<>(votesCounts.keySet().stream().collect(Collectors.toMap(party -> party,
+                party -> (Double.valueOf(votesCounts.get(party))/totalVotes*100))).entrySet().stream().toList());
 
         percentages.sort((o1, o2) -> {
             if (o1.getValue() > o2.getValue()) return -1;
