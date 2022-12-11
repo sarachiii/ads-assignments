@@ -305,8 +305,10 @@ public class Election {
         summary.append("\nTotal number of candidates in the election = " + getAllCandidates().size());
         summary.append("\nDifferent candidates with duplicate names across different parties are:\n").append(getCandidatesWithDuplicateNames());
         summary.append("\n\nOverall election results by party percentage:\n");
-        List<Map.Entry<Party, Double>> electionList = sortedElectionResultsByPartyPercentage(this.getVotesByParty().size(), this.getVotesByParty());
 
+        // A list of the election results by party percentage
+        List<Map.Entry<Party, Double>> electionList = sortedElectionResultsByPartyPercentage(this.getVotesByParty().size(), this.getVotesByParty());
+        // List of all election results with line breaks after every 3 results
         end = 3;
         for (int i = 0; i <= electionList.size(); i += 3) {
 
@@ -324,12 +326,35 @@ public class Election {
                 break;
             }
         }
-        summary.append("\n\nPolling stations in Amsterdam Wibautstraat area with zip codes 1091AA-1091ZZ:\n").append(getPollingStationsByZipCodeRange("1091AA", "1091ZZ"));
 
-        // TODO report the top 10 sorted election results within the Amsterdam Wibautstraat area with zipcodes between 1091AA and 1091ZZ ordered by decreasing party percentage
+        Collection<PollingStation> pollingStationsByZipCodeRange = getPollingStationsByZipCodeRange("1091AA", "1091ZZ");
+        summary.append("\n\nPolling stations in Amsterdam Wibautstraat area with zip codes 1091AA-1091ZZ:\n").append(pollingStationsByZipCodeRange);
         summary.append("\n\nTop 10 election results by party percentage in Amsterdam area with zip codes 1091AA-1091ZZ:\n");
+        // Map with votes of parties by zip code range
+        Map<Party, Integer> votesByParties = getVotesByPartyAcrossPollingStations(pollingStationsByZipCodeRange);
 
+        // List of top ten elected parties
+        int topNumber = 10;
+        List<Map.Entry<Party, Double>> topTenElections = sortedElectionResultsByPartyPercentage(topNumber, votesByParties);
 
+        // List of top ten parties with line breaks after every two parties
+        end = 2;
+        for (int i = 0; i <= topTenElections.size(); i += 2) {
+
+            if (!topTenElections.subList(i, end).isEmpty()) {
+                summary.append(topTenElections.subList(i, end)).append("\n");
+            }
+
+            if (end + 2 < topTenElections.size()) {
+                end += 2;
+            } else {
+                end = topTenElections.size();
+            }
+
+            if (i + 2 > end) {
+                break;
+            }
+        }
         summary.append("\n\nMost representative polling station is:\n").append(findMostRepresentativePollingStation());
 
         // TODO report the sorted election results by decreasing party percentage of the most representative polling station
