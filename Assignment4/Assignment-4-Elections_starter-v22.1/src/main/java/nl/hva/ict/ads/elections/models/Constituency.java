@@ -116,7 +116,7 @@ public class Constituency {
     public NavigableSet<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
         return this.pollingStations.stream().filter(pollingStation -> pollingStation.getZipCode().compareTo(firstZipCode)
                 > 0 && pollingStation.getZipCode().compareTo(lastZipCode) < 0 ).collect(Collectors.toCollection(() ->
-                new TreeSet<>(Comparator.comparing(PollingStation::getZipCode)))); // return set of polling stations
+                new TreeSet<>(Comparator.comparing(PollingStation::getZipCode))));
     }
 
     /**
