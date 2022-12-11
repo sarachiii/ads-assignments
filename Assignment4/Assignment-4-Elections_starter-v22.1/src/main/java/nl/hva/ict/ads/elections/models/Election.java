@@ -132,28 +132,11 @@ public class Election {
      * @return
      */
     public Map<Party, Integer> getVotesByPartyAcrossPollingStations(Collection<PollingStation> pollingStations) {
-
-        Map<Party, Integer> votes = new HashMap<>();
-
-        if (pollingStations == null) {
-            return null;
-        }
-
-//        System.out.println(this.constituencies.stream().flatMap(constituency -> constituency.getPollingStations().stream()
-//                .filter(pollingStation -> Collections.frequency(pollingStations,pollingStation) > 1).collect(Collectors.toSet())));
-        for (Constituency c : this.constituencies) {
-            for (PollingStation existingP : c.getPollingStations()) {
-                for (PollingStation requiredP : pollingStations) {
-                    if (existingP.equals(requiredP)) {
-                        for (Party party : existingP.getVotesByParty().keySet()) {
-                            votes.merge(party, existingP.getVotesByParty().get(party), Integer::sum);
-                        }
-                    }
-                }
-            }
-        }
-
-        return votes;
+        return this.constituencies.stream().flatMap(constituency -> constituency.getPollingStations().stream()
+                        .filter(pollingStation -> Collections.frequency(pollingStations.stream().toList(), pollingStation) > 0))
+                .collect(Collectors.toSet()).stream().flatMap(pollingStation -> pollingStation.getVotesByParty().entrySet()
+                        .stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(),
+                        partyIntegerEntry -> partyIntegerEntry.getValue(), Integer::sum));
     }
 
     /**
