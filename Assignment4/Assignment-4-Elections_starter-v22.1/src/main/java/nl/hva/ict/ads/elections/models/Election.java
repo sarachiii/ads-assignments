@@ -87,15 +87,10 @@ public class Election {
      * @return
      */
     public Set<Candidate> getCandidatesWithDuplicateNames() {
-        List<Candidate> candidates = this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).toList();
-        List<String> candidateNames = new ArrayList<>();
-
-        for (Candidate c : candidates) {
-            candidateNames.add(c.getFullName());
-        }
+        List<String> fullnames = this.parties.values().stream().flatMap(party -> party.getCandidates().stream().map(candidate -> candidate.getFullName())).toList();
 
         return this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).filter(candidate ->
-                Collections.frequency(candidateNames, candidate.getFullName()) > 1).collect(Collectors.toSet());
+                Collections.frequency(fullnames, candidate.getFullName()) > 1).collect(Collectors.toSet());
     }
 
     /**
@@ -181,6 +176,7 @@ public class Election {
         Map<Party,Integer> totalVotesByParty = this.getVotesByParty();
         Set<PollingStation> pollingStations = this.constituencies.stream().flatMap(constituency ->
                 constituency.getPollingStations().stream()).collect(Collectors.toSet());
+
         Map<Party, Integer> votesByPartyByStation = pollingStations.stream().flatMap(pollingStation ->
                 pollingStation.getVotesByParty().entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,Integer::sum));
         Map<PollingStation,Double> deviations = new HashMap<>();
@@ -188,6 +184,7 @@ public class Election {
         for (PollingStation p : pollingStations){
             deviations.put(p,this.euclidianVotesDistributionDeviation(totalVotesByParty,votesByPartyByStation));
         }
+
 
         return Collections.max(deviations.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();// replace by a proper outcome
     }
