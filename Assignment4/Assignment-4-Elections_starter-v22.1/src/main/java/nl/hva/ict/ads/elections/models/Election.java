@@ -74,10 +74,8 @@ public class Election {
      */
     public Map<Constituency, Integer> numberOfRegistrationsByConstituency(Party party) {
 
-        Map<Constituency, Integer> registrations = this.constituencies.stream().collect(Collectors.toMap(constituency -> constituency,
+        return this.constituencies.stream().collect(Collectors.toMap(constituency -> constituency,
                 constituency -> constituency.getCandidates(party).size(), Integer::sum));
-
-        return registrations;
     }
 
     /**
