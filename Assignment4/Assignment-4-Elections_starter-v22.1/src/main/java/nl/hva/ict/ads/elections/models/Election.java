@@ -236,7 +236,7 @@ public class Election {
         StringBuilder summary = new StringBuilder()
                 .append("\nSummary of ").append(party).append(":\n");
         summary.append("\nTotal number of candidates = ").append(party.getCandidates().size());
-        summary.append("\nCandidates: ");
+        summary.append("\n\nCandidates: ");
 
         // List of all candidates with line breaks after every 5 parties
         int end = 5;
@@ -254,7 +254,7 @@ public class Election {
             }
         }
         summary.append("\nTotal number of registrations = ").append(numberOfRegistrationsByConstituency(party).values().stream().mapToInt(Integer::intValue).sum());
-        summary.append("\nNumber of registrations per constituency: ").append(numberOfRegistrationsByConstituency(party));
+        summary.append("\n\nNumber of registrations per constituency: ").append(numberOfRegistrationsByConstituency(party));
         return summary.toString();
     }
 
@@ -340,11 +340,32 @@ public class Election {
                 break;
             }
         }
-        summary.append("\n\nMost representative polling station is:\n").append(findMostRepresentativePollingStation());
 
-        // TODO report the sorted election results by decreasing party percentage of the most representative polling station
-        summary.append("\n\nMost representative polling station is:\n").append(findMostRepresentativePollingStation());
+        PollingStation mostRepresentativePollingStation = findMostRepresentativePollingStation();
+        summary.append("\n\nMost representative polling station is:\n\n").append(mostRepresentativePollingStation).append("\n\n");
 
+        int topSize = 20; // This number is chosen based on the output of the assignment
+        List<Map.Entry<Party, Double>> representativeParties = sortedElectionResultsByPartyPercentage
+                (topSize, mostRepresentativePollingStation.getVotesByParty());
+
+        // List of parties with line breaks after every two parties
+        end = 2;
+        for (int i = 0; i <= representativeParties.size(); i += 2) {
+
+            if (!representativeParties.subList(i, end).isEmpty()) {
+                summary.append(representativeParties.subList(i, end)).append("\n");
+            }
+
+            if (end + 2 < representativeParties.size()) {
+                end += 2;
+            } else {
+                end = representativeParties.size();
+            }
+
+            if (i + 2 > end) {
+                break;
+            }
+        }
         return summary.toString();
     }
 
