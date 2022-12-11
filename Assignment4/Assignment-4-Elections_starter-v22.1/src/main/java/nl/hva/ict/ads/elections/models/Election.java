@@ -114,11 +114,12 @@ public class Election {
 
     /**
      * Retrieves per party the total number of votes across all candidates, constituencies and polling stations
+     *
      * @return
      */
     public Map<Party, Integer> getVotesByParty() {
         return this.constituencies.stream().flatMap(constituency -> constituency.getVotesByParty()
-                .entrySet().stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(),partyIntegerEntry -> partyIntegerEntry.getValue()));
+                .entrySet().stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(), partyIntegerEntry -> partyIntegerEntry.getValue()));
     }
 
     /**
@@ -126,48 +127,35 @@ public class Election {
      * that were cast in one out of the given collection of polling stations.
      * This method is useful to prepare an election result for any sub-area of a Constituency.
      * Or to obtain statistics of special types of voting, e.g. by mail.
+     *
      * @param pollingStations the polling stations that cover the sub-area of interest
      * @return
      */
     public Map<Party, Integer> getVotesByPartyAcrossPollingStations(Collection<PollingStation> pollingStations) {
-
-        Map<Party, Integer> votes = new HashMap<>();
-
-        if (pollingStations == null){ return null;}
-
-//        System.out.println(this.constituencies.stream().flatMap(constituency -> constituency.getPollingStations().stream()
-//                .filter(pollingStation -> Collections.frequency(pollingStations,pollingStation) > 1).collect(Collectors.toSet())));
-        for (Constituency c : this.constituencies){
-            for (PollingStation existingP: c.getPollingStations()){
-                for (PollingStation requiredP: pollingStations){
-                    if (existingP.equals(requiredP)){
-                        for (Party party: existingP.getVotesByParty().keySet()){
-                            votes.merge(party,existingP.getVotesByParty().get(party),Integer::sum);
-                        }
-                    }
-                }
-            }
-        }
-
-        return votes; // replace by a proper outcome
+        return this.constituencies.stream().flatMap(constituency -> constituency.getPollingStations().stream()
+                        .filter(pollingStation -> Collections.frequency(pollingStations.stream().toList(), pollingStation) > 0))
+                .collect(Collectors.toSet()).stream().flatMap(pollingStation -> pollingStation.getVotesByParty().entrySet()
+                        .stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(),
+                        partyIntegerEntry -> partyIntegerEntry.getValue(), Integer::sum));
     }
 
     /**
      * Transforms and sorts decreasingly vote counts by party into votes percentages by party
      * The party with the highest vote count shall be ranked upfront
      * The votes percentage by party is calculated from  100.0 * partyVotes / totalVotes;
-     * @return  the sorted list of (party,votesPercentage) pairs with the highest percentage upfront
+     *
+     * @return the sorted list of (party,votesPercentage) pairs with the highest percentage upfront
      */
-    public static List<Map.Entry<Party,Double>> sortedElectionResultsByPartyPercentage(int tops, Map<Party, Integer> votesCounts) {
+    public static List<Map.Entry<Party, Double>> sortedElectionResultsByPartyPercentage(int tops, Map<Party, Integer> votesCounts) {
 
         int totalVotes = votesCounts.values().stream().mapToInt(Integer::intValue).sum();
-        Map<Party,Double> percentagesByParty = new HashMap<>();
+        Map<Party, Double> percentagesByParty = new HashMap<>();
 
-        for (Party p : votesCounts.keySet()){
-            percentagesByParty.put(p,( Double.valueOf(votesCounts.get(p))/totalVotes*100));
+        for (Party p : votesCounts.keySet()) {
+            percentagesByParty.put(p, (Double.valueOf(votesCounts.get(p)) / totalVotes * 100));
         }
 
-        List<Map.Entry<Party,Double>> percentages = new ArrayList<>(percentagesByParty.entrySet().stream().toList());
+        List<Map.Entry<Party, Double>> percentages = new ArrayList<>(percentagesByParty.entrySet().stream().toList());
 
         percentages.sort((o1, o2) -> {
             if (o1.getValue() > o2.getValue()) return -1;
@@ -175,7 +163,7 @@ public class Election {
             return 0;
         });
 
-        return percentages.subList(0,tops); // replace by a proper outcome
+        return percentages.subList(0, tops); // replace by a proper outcome
     }
 
     /**
@@ -184,7 +172,7 @@ public class Election {
      * A perfect match is found, if for each party the percentage of votes won at the polling station
      * is identical to the percentage of votes won by the party overall in the election.
      * The most representative Polling Station has the smallest deviation from that perfect match.
-     *
+     * <p>
      * There are different metrics possible to calculate a relative deviation between distributions.
      * You may use the helper method {@link #euclidianVotesDistributionDeviation(Map, Map)}
      * which calculates a relative least-squares deviation between two distributions.
@@ -224,13 +212,14 @@ public class Election {
         // if we compare two voteCounts that have the same relative distribution across parties, the outcome will be zero
 
         return votesCounts1.entrySet().stream()
-                .mapToDouble(e -> Math.pow(e.getValue()/(double)totalNumberOfVotes1 -
-                        votesCounts2.getOrDefault(e.getKey(),0)/(double)totalNumberOfVotes2, 2))
+                .mapToDouble(e -> Math.pow(e.getValue() / (double) totalNumberOfVotes1 -
+                        votesCounts2.getOrDefault(e.getKey(), 0) / (double) totalNumberOfVotes2, 2))
                 .sum();
     }
 
     /**
      * auxiliary method to calculate the total sum of a collection of integers
+     *
      * @param integers
      * @return
      */
@@ -267,9 +256,6 @@ public class Election {
         summary.append("\nTotal number of registrations = ").append(numberOfRegistrationsByConstituency(party).values().stream().mapToInt(Integer::intValue).sum());
 
         summary.append("\nNumber of registrations per constituency: ").append(numberOfRegistrationsByConstituency(party));
-
-
-
 
 
         return summary.toString();
@@ -320,8 +306,6 @@ public class Election {
         // TODO report the sorted election results by decreasing party percentage of the most representative polling station
 
 
-
-
         return summary.toString();
     }
 
@@ -330,10 +314,11 @@ public class Election {
      * This method can cope with any structure of sub folders, but does assume the file names to comply with the conventions
      * as found from downloading the files from https://data.overheid.nl/dataset/verkiezingsuitslag-tweede-kamer-2021
      * So, you can merge folders after unpacking the zip distributions of the data, but do not change file names.
-     * @param folderName    the root folder with the data files of the election results
+     *
+     * @param folderName the root folder with the data files of the election results
      * @return een Election met alle daarbij behorende gegevens.
      * @throws XMLStreamException bij fouten in een van de XML bestanden.
-     * @throws IOException als er iets mis gaat bij het lezen van een van de bestanden.
+     * @throws IOException        als er iets mis gaat bij het lezen van een van de bestanden.
      */
     public static Election importFromDataFolder(String folderName) throws XMLStreamException, IOException {
         System.out.println("Loading election data from " + folderName);
