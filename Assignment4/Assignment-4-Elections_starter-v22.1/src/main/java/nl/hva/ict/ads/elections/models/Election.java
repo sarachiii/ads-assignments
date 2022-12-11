@@ -87,12 +87,12 @@ public class Election {
      * @return
      */
     public Set<Candidate> getCandidatesWithDuplicateNames() {
-        List<String> fullNames = this.parties.values().stream().flatMap(party -> party.getCandidates()
-                .stream()
-                .map(Candidate::getFullName))
-                .toList();
+        Set<Candidate> candidates = this.parties.values().stream().flatMap(party ->
+                party.getCandidates().stream()).collect(Collectors.toSet());
 
-        return this.parties.values().stream().flatMap(party -> party.getCandidates().stream()).filter(candidate ->
+        List<String> fullNames = candidates.stream().map(Candidate::getFullName).toList();
+
+        return candidates.stream().filter(candidate ->
                 Collections.frequency(fullNames, candidate.getFullName()) > 1).collect(Collectors.toSet());
     }
 
