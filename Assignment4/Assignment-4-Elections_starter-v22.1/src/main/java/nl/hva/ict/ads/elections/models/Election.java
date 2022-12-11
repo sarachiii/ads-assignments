@@ -118,7 +118,7 @@ public class Election {
      */
     public Map<Party, Integer> getVotesByParty() {
         return this.constituencies.stream().flatMap(constituency -> constituency.getVotesByParty()
-                .entrySet().stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(), partyIntegerEntry -> partyIntegerEntry.getValue()));
+                .entrySet().stream()).collect(Collectors.toMap(partyIntegerEntry -> partyIntegerEntry.getKey(), partyIntegerEntry -> partyIntegerEntry.getValue(),Integer::sum));
     }
 
     /**
@@ -148,12 +148,8 @@ public class Election {
     public static List<Map.Entry<Party, Double>> sortedElectionResultsByPartyPercentage(int tops, Map<Party, Integer> votesCounts) {
 
         int totalVotes = integersSum(votesCounts.values());
-        Map<Party, Double> percentagesByParty = new HashMap<>();
-
-        for (Party p : votesCounts.keySet()) {
-            percentagesByParty.put(p, (Double.valueOf(votesCounts.get(p)) / totalVotes * 100));
-        }
-
+        Map<Party, Double> percentagesByParty = votesCounts.keySet().stream().collect(Collectors.toMap(party -> party,
+                party -> (Double.valueOf(votesCounts.get(party))/totalVotes*100)));
         List<Map.Entry<Party, Double>> percentages = new ArrayList<>(percentagesByParty.entrySet().stream().toList());
 
         percentages.sort((o1, o2) -> {
@@ -236,7 +232,7 @@ public class Election {
         StringBuilder summary = new StringBuilder()
                 .append("\nSummary of ").append(party).append(":\n");
         summary.append("\nTotal number of candidates = ").append(party.getCandidates().size());
-        summary.append("\n\nCandidates: ");
+        summary.append("\nCandidates: ");
 
         // List of all candidates with line breaks after every 5 parties
         int end = 5;
@@ -254,7 +250,7 @@ public class Election {
             }
         }
         summary.append("\nTotal number of registrations = ").append(numberOfRegistrationsByConstituency(party).values().stream().mapToInt(Integer::intValue).sum());
-        summary.append("\n\nNumber of registrations per constituency: ").append(numberOfRegistrationsByConstituency(party));
+        summary.append("\nNumber of registrations per constituency: ").append(numberOfRegistrationsByConstituency(party));
         return summary.toString();
     }
 
@@ -340,32 +336,12 @@ public class Election {
                 break;
             }
         }
+        summary.append("\n\nMost representative polling station is:\n").append(findMostRepresentativePollingStation());
 
-        PollingStation mostRepresentativePollingStation = findMostRepresentativePollingStation();
-        summary.append("\n\nMost representative polling station is:\n\n").append(mostRepresentativePollingStation).append("\n\n");
+        // TODO report the sorted election results by decreasing party percentage of the most representative polling station
+        summary.append("\n\nMost representative polling station is:\n").append(this.sortedElectionResultsByPartyPercentage(
+                findMostRepresentativePollingStation().getVotesByParty().size(),findMostRepresentativePollingStation().getVotesByParty()));
 
-        int topSize = 20; // This number is chosen based on the output of the assignment
-        List<Map.Entry<Party, Double>> representativeParties = sortedElectionResultsByPartyPercentage
-                (topSize, mostRepresentativePollingStation.getVotesByParty());
-
-        // List of parties with line breaks after every two parties
-        end = 2;
-        for (int i = 0; i <= representativeParties.size(); i += 2) {
-
-            if (!representativeParties.subList(i, end).isEmpty()) {
-                summary.append(representativeParties.subList(i, end)).append("\n");
-            }
-
-            if (end + 2 < representativeParties.size()) {
-                end += 2;
-            } else {
-                end = representativeParties.size();
-            }
-
-            if (i + 2 > end) {
-                break;
-            }
-        }
         return summary.toString();
     }
 
