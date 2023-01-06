@@ -4,9 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ADS</groupId>
-    <artifactId>Assignment5</artifactId>
+    <groupId>nl.hva.ads</groupId>
+    <artifactId>maze-escape</artifactId>
     <version>22.1</version>
+    <name>A5_MazeEscape_starter</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -17,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
@@ -29,6 +30,7 @@
         </dependency>
     </dependencies>
 
+
     <build>
         <plugins>
             <plugin>
@@ -38,4 +40,5 @@
         </plugins>
     </build>
 
+    
 </project>
