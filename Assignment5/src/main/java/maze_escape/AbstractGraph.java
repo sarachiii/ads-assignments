@@ -40,7 +40,7 @@ public abstract class AbstractGraph<V> {
             return null;
         }
 
-        return getAllVertices(firstVertex, new HashSet<>()); // call recursive method with a new set
+        return getAllVertices(firstVertex, new LinkedHashSet<>()); // call recursive method with a new set
 
     }
 
@@ -73,14 +73,35 @@ public abstract class AbstractGraph<V> {
     public String formatAdjacencyList(V firstVertex) {
         StringBuilder stringBuilder = new StringBuilder("Graph adjacency list:\n");
 
-        // TODO recursively build the adjacency list including all vertices that can be reached from firstVertex
-        //  following a recursive pre-order traversal of a spanning tree
-        //  using the above stringBuilder to format the list
-        //  hint: use the getNeighbours() method to retrieve the roots of the child subtrees.
+        // Make a new map with its neighbours from the sub method, linked hashmap is used to remember order
+        Map<V,Set<V>> verticesNeighbours = formatAdjacencyList(firstVertex, new LinkedHashMap<>());
 
+        // for each vertex append to the string with their neighbours
+        for (V vertex : verticesNeighbours.keySet()){
+            stringBuilder.append(vertex + ": " +
+                    verticesNeighbours.get(vertex).toString().replaceAll("\\s", "") + "\n"); // replace whitespaces with nothing
+        }
 
-        // return the result
         return stringBuilder.toString();
+    }
+
+    public Map<V,Set<V>> formatAdjacencyList(V current, Map<V,Set<V>> visited) {
+
+
+        for (V neighbour : this.getNeighbours(current)){
+            // Add the current vertex with its neighbours if the neighbour doesn't exist yet
+            if (!visited.containsKey(neighbour)) {
+                visited.put(current, this.getNeighbours(current));
+
+                // recursively call the method again with the neighbour as its new current point
+                formatAdjacencyList(neighbour, visited);
+            }
+        }
+
+        // Last neighbour gets added to the map because all previous neighbours already exist
+        visited.put(current,this.getNeighbours(current));
+
+        return visited;
     }
 
 
@@ -94,7 +115,7 @@ public abstract class AbstractGraph<V> {
 
         /**
          * representation invariants:
-         * 1. vertices contains a sequence of vertices that are neighbours in the graph,
+         * 1. vertices contain a sequence of vertices that are neighbours in the graph,
          * i.e. FOR ALL i: 1 < i < vertices.length: getNeighbours(vertices[i-1]).contains(vertices[i])
          * 2. a path with one vertex equal start and target vertex
          * 3. a path without vertices is empty, does not have a start nor a target
@@ -169,9 +190,32 @@ public abstract class AbstractGraph<V> {
 
         // TODO calculate the path from start to target by recursive depth-first-search
 
+        return depthFirstSearch(startVertex,targetVertex,new HashSet<>());    // replace by a proper outcome, if any
+    }
+
+    public GPath depthFirstSearch(V current, V target, Set<V> visited) {
+
+        if (visited.contains(current)) return null;
+
+        GPath gPath = new GPath();
+
+        visited.add(current);
+
+        if (current.equals(target)){
+            gPath.vertices.addLast(current);
+            return gPath;
+        }
+        for (V neighbour : this.getNeighbours(current)){
+            gPath.vertices = depthFirstSearch(neighbour,target,visited).vertices;
+            if (gPath.vertices != null){
+                gPath.vertices.addFirst(current);
+                return gPath;
+            }
+        }
 
         return null;    // replace by a proper outcome, if any
     }
+
 
 
     /**
@@ -188,6 +232,8 @@ public abstract class AbstractGraph<V> {
         if (startVertex == null || targetVertex == null) return null;
 
         // TODO calculate the path from start to target by breadth-first-search
+
+
 
 
         return null;    // replace by a proper outcome, if any
