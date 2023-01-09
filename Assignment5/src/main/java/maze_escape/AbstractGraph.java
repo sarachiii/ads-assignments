@@ -49,8 +49,8 @@ public abstract class AbstractGraph<V> {
         if (visited.contains(current)) return visited;
         visited.add(current);
 
-        for (V neighbor : this.getNeighbours(current)){
-            getAllVertices(neighbor,visited);
+        for (V neighbor : this.getNeighbours(current)) {
+            getAllVertices(neighbor, visited);
         }
 
         return visited;
@@ -74,10 +74,10 @@ public abstract class AbstractGraph<V> {
         StringBuilder stringBuilder = new StringBuilder("Graph adjacency list:\n");
 
         // Make a new map with its neighbours from the sub method, linked hashmap is used to remember order
-        Map<V,Set<V>> verticesNeighbours = formatAdjacencyList(firstVertex, new LinkedHashMap<>());
+        Map<V, Set<V>> verticesNeighbours = formatAdjacencyList(firstVertex, new LinkedHashMap<>());
 
         // for each vertex append to the string with their neighbours
-        for (V vertex : verticesNeighbours.keySet()){
+        for (V vertex : verticesNeighbours.keySet()) {
             stringBuilder.append(vertex + ": " +
                     verticesNeighbours.get(vertex).toString().replaceAll("\\s", "") + "\n"); // replace whitespaces with nothing
         }
@@ -85,10 +85,10 @@ public abstract class AbstractGraph<V> {
         return stringBuilder.toString();
     }
 
-    public Map<V,Set<V>> formatAdjacencyList(V current, Map<V,Set<V>> visited) {
+    public Map<V, Set<V>> formatAdjacencyList(V current, Map<V, Set<V>> visited) {
 
 
-        for (V neighbour : this.getNeighbours(current)){
+        for (V neighbour : this.getNeighbours(current)) {
             // Add the current vertex with its neighbours if the neighbour doesn't exist yet
             if (!visited.containsKey(neighbour)) {
                 visited.put(current, this.getNeighbours(current));
@@ -99,7 +99,7 @@ public abstract class AbstractGraph<V> {
         }
 
         // Last neighbour gets added to the map because all previous neighbours already exist
-        visited.put(current,this.getNeighbours(current));
+        visited.put(current, this.getNeighbours(current));
 
         return visited;
     }
@@ -188,35 +188,36 @@ public abstract class AbstractGraph<V> {
 
         if (startVertex == null || targetVertex == null) return null;
 
-        // TODO calculate the path from start to target by recursive depth-first-search
-
-        return depthFirstSearch(startVertex,targetVertex,new HashSet<>());    // replace by a proper outcome, if any
+        return depthFirstSearch(startVertex, targetVertex, new GPath());
     }
 
-    public GPath depthFirstSearch(V current, V target, Set<V> visited) {
+    public GPath depthFirstSearch(V current, V target, GPath gPath) {
 
-        if (visited.contains(current)) return null;
+        if (gPath.visited.contains(current)) return gPath; // If current was visited earlier: bail out
 
-        GPath gPath = new GPath();
+        gPath.visited.add(current);
 
-        visited.add(current);
-
-        if (current.equals(target)){
+        // If current has reached target: return path
+        if (current.equals(target)) {
             gPath.vertices.addLast(current);
             return gPath;
         }
-        for (V neighbour : this.getNeighbours(current)){
-            gPath.vertices = depthFirstSearch(neighbour,target,visited).vertices;
-            if (gPath.vertices != null){
-                gPath.vertices.addFirst(current);
-                return gPath;
+
+        // Loop through all neighbours and add them if they don't exist already
+        for (V neighbour : this.getNeighbours(current)) {
+            if (!gPath.vertices.contains(neighbour)) {
+                gPath.vertices.addLast(current);
+                depthFirstSearch(neighbour, target, gPath);
+                if (!gPath.vertices.contains(target)) { // If target is not found in final path it's an unconnected path
+                    return null;
+                } else return gPath;
             }
         }
 
-        return null;    // replace by a proper outcome, if any
+        gPath.vertices.addLast(current); // Add last remaining neighbour
+
+        return gPath;
     }
-
-
 
     /**
      * Uses a breadth-first search algorithm to find a path from the startVertex to targetVertex in the subgraph
@@ -232,8 +233,6 @@ public abstract class AbstractGraph<V> {
         if (startVertex == null || targetVertex == null) return null;
 
         // TODO calculate the path from start to target by breadth-first-search
-
-
 
 
         return null;    // replace by a proper outcome, if any
