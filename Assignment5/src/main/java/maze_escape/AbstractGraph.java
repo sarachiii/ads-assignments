@@ -173,6 +173,7 @@ public abstract class AbstractGraph<V> {
         public Set<V> getVisited() {
             return this.visited;
         }
+
     }
 
     /**
@@ -188,33 +189,41 @@ public abstract class AbstractGraph<V> {
 
         if (startVertex == null || targetVertex == null) return null;
 
-        return depthFirstSearch(startVertex, targetVertex, new GPath());
+        GPath gPath = depthFirstSearch(startVertex, targetVertex, new GPath());
+
+        if (gPath.vertices == null){
+            return null;
+        }
+
+        return gPath;
     }
 
     public GPath depthFirstSearch(V current, V target, GPath gPath) {
 
-        if (gPath.visited.contains(current)) return gPath; // If current was visited earlier: bail out
+        if (gPath.visited.contains(current)){
+            gPath.vertices = null;
+            return gPath; // If current was visited earlier: bail out
+        }
 
         gPath.visited.add(current);
 
         // If current has reached target: return path
         if (current.equals(target)) {
+            gPath.vertices = new LinkedList<>();
             gPath.vertices.addLast(current);
             return gPath;
         }
 
         // Loop through all neighbours and add them if they don't exist already
         for (V neighbour : this.getNeighbours(current)) {
-            if (!gPath.vertices.contains(neighbour)) {
-                gPath.vertices.addLast(current);
-                depthFirstSearch(neighbour, target, gPath);
-                if (!gPath.vertices.contains(target)) { // If target is not found in final path it's an unconnected path
-                    return null;
-                } else return gPath;
+            gPath = depthFirstSearch(neighbour, target, gPath);
+            if (gPath.vertices != null) {
+                gPath.vertices.addFirst(current);
+                return gPath;
             }
         }
 
-        gPath.vertices.addLast(current); // Add last remaining neighbour
+        gPath.vertices = null;
 
         return gPath;
     }
@@ -232,11 +241,38 @@ public abstract class AbstractGraph<V> {
 
         if (startVertex == null || targetVertex == null) return null;
 
-        // TODO calculate the path from start to target by breadth-first-search
+        GPath gPath = new GPath();
 
+        gPath.visited.add(targetVertex);
+        gPath.vertices.addLast(targetVertex);
+        if (startVertex.equals(targetVertex)) return gPath;
+        Queue<V> fifoQueue = new LinkedList<>();
+        Map<V,V> visitedFrom = new HashMap<>();
 
-        return null;    // replace by a proper outcome, if any
+        fifoQueue.offer(startVertex);
+        visitedFrom.put(startVertex,null);
+
+        V current = fifoQueue.poll();
+        while (current != null) {
+            for (V neighbour : this.getNeighbours(current)){
+                if (neighbour.equals(targetVertex)){
+                    while (current != null) {
+                        gPath.vertices.addFirst(current);
+                        current = visitedFrom.get(current);
+                    }
+                    gPath.visited = visitedFrom.keySet();
+                    return gPath;
+                } else if (!visitedFrom.containsKey(neighbour)) {
+                    visitedFrom.put(neighbour,current);
+                    fifoQueue.offer(neighbour);
+                }
+            }
+            current = fifoQueue.poll();
+        }
+
+        return null;    // No path found from start to target
     }
+
 
     // helper class to build the spanning tree of visited vertices in dijkstra's shortest path algorithm
     // your may change this class or delete it altogether follow a different approach in your implementation
