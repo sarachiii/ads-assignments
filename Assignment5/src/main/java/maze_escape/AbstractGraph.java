@@ -191,7 +191,7 @@ public abstract class AbstractGraph<V> {
 
         GPath gPath = depthFirstSearch(startVertex, targetVertex, new GPath());
 
-        if (gPath.vertices == null){
+        if (gPath.vertices == null) {
             return null;
         }
 
@@ -200,7 +200,7 @@ public abstract class AbstractGraph<V> {
 
     public GPath depthFirstSearch(V current, V target, GPath gPath) {
 
-        if (gPath.visited.contains(current)){
+        if (gPath.visited.contains(current)) {
             gPath.vertices = null;
             return gPath; // If current was visited earlier: bail out
         }
@@ -247,15 +247,15 @@ public abstract class AbstractGraph<V> {
         gPath.vertices.addLast(targetVertex);
         if (startVertex.equals(targetVertex)) return gPath;
         Queue<V> fifoQueue = new LinkedList<>();
-        Map<V,V> visitedFrom = new HashMap<>();
+        Map<V, V> visitedFrom = new HashMap<>();
 
         fifoQueue.offer(startVertex);
-        visitedFrom.put(startVertex,null);
+        visitedFrom.put(startVertex, null);
 
         V current = fifoQueue.poll();
         while (current != null) {
-            for (V neighbour : this.getNeighbours(current)){
-                if (neighbour.equals(targetVertex)){
+            for (V neighbour : this.getNeighbours(current)) {
+                if (neighbour.equals(targetVertex)) {
                     while (current != null) {
                         gPath.vertices.addFirst(current);
                         current = visitedFrom.get(current);
@@ -263,7 +263,7 @@ public abstract class AbstractGraph<V> {
                     gPath.visited = visitedFrom.keySet();
                     return gPath;
                 } else if (!visitedFrom.containsKey(neighbour)) {
-                    visitedFrom.put(neighbour,current);
+                    visitedFrom.put(neighbour, current);
                     fifoQueue.offer(neighbour);
                 }
             }
@@ -286,7 +286,7 @@ public abstract class AbstractGraph<V> {
             this.vertex = vertex;
         }
 
-        // comparable interface helps to find a node with the shortest current path, sofar
+        // comparable interface helps to find a node with the shortest current path, so far
         @Override
         public int compareTo(MSTNode otherMSTNode) {
             return Double.compare(weightSumTo, otherMSTNode.weightSumTo);
@@ -331,22 +331,52 @@ public abstract class AbstractGraph<V> {
         nearestMSTNode.weightSumTo = 0.0;
         minimumSpanningTree.put(startVertex, nearestMSTNode);
 
-        // TODO maybe more helper variables or data structures, if needed
-
-
         while (nearestMSTNode != null) {
 
-            // TODO continue Dijkstra's algorithm to process nearestMSTNode
-            //  mark nodes as you find their current shortest path to be final
-            //  if you hit the target: complete the path and bail out !!!
-            //  register all visited vertices for statistical purposes
+            path.visited.add(nearestMSTNode.vertex); // Register visited vertex
 
+            // If vertex is at the target vertex build the path
+            if (nearestMSTNode.vertex.equals(targetVertex)) {
+                V parentVertex = nearestMSTNode.parentVertex;
 
-            // TODO find the next nearest MSTNode that is not marked yet
-            nearestMSTNode = null;      // replace by a proper selection
+                // Add all the parents until you reach the beginning
+                while (parentVertex != null) {
+                    path.vertices.addFirst(parentVertex);
+                    parentVertex = minimumSpanningTree.get(parentVertex).parentVertex;
+                }
+
+                path.vertices.add(targetVertex);
+                path.totalWeight = nearestMSTNode.weightSumTo;
+                return path;
+            }
+
+            // Calculate the weight of all neighbour vertices
+            for (V neighbour : getNeighbours(nearestMSTNode.vertex)) {
+
+                if (!path.visited.contains(neighbour)) {
+                    MSTNode neighbourNode;
+
+                    if (!minimumSpanningTree.containsKey(neighbour)) {
+                        neighbourNode = new MSTNode(neighbour);
+                        minimumSpanningTree.put(neighbour, neighbourNode);
+                    } else {
+                        neighbourNode = minimumSpanningTree.get(neighbour);
+                    }
+                    double sum = weightMapper.apply(nearestMSTNode.vertex, neighbour) + nearestMSTNode.weightSumTo;
+                    // Store the weight if the new sum is smaller
+                    if (sum < neighbourNode.weightSumTo) {
+                        neighbourNode.weightSumTo = sum;
+                        neighbourNode.parentVertex = nearestMSTNode.vertex;
+                    }
+                    minimumSpanningTree.put(neighbour, neighbourNode);
+                }
+            }
+            nearestMSTNode.marked = true;
+
+            // Find the next nearest MSTNode that is not marked yet
+            nearestMSTNode = minimumSpanningTree.values().stream().filter(node -> !node.marked).min(MSTNode::compareTo)
+                    .orElse(null);
         }
-
-
-        return null;        // replace by a proper outcome, if any
+        return null;
     }
 }
